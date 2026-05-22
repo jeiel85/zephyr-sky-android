@@ -1,5 +1,24 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-22] 리뉴얼 이전 GitHub Issues 백로그 정리
+
+### 작업
+- GitHub 열린 이슈 29건(`#19`~`#57` 중 열린 항목)을 확인.
+- 모든 열린 이슈가 2026-05-04 생성된 Kotlin/Compose Android Native 리뉴얼 이전 백로그임을 확인.
+- `#37 [Performance] Flutter 엔진 및 종속성 최신화` 등 현재 코드베이스와 직접 맞지 않는 Flutter 시절 항목이 포함되어 있어 전체 열린 이슈를 닫음.
+- 각 이슈에는 리뉴얼 이전 백로그 정리 사유와 신규 작업은 리뉴얼 이후 기준으로 새 이슈를 생성한다는 코멘트를 남김.
+
+### 변경 파일
+- `HISTORY.md`
+
+### 검증
+- GitHub: `gh issue list --state open --limit 50` 결과 열린 이슈 없음 확인.
+- 로컬: 문서 이력 변경만 수행하여 빌드/테스트는 생략.
+- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+
+### 결과
+- GitHub Issues 백로그를 리뉴얼 이후 기준으로 새로 시작할 수 있도록 초기화함.
+
 ## [2026-05-22] Kotlin/Compose Android Native 빌드 및 릴리즈 파이프라인 정렬
 
 ### 작업
@@ -49,7 +68,7 @@
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 최초 실행 시 기존 테스트 기대값(`Weather`) 불일치로 실패.
 - 로컬: 앱 표시명 테스트 기대값을 `Zephyr Sky`로 정렬한 뒤 `.\gradlew.bat test` 성공.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
-- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- CI: GitHub Actions `Android CI` 런 `26274383792` 성공 확인.
 
 ### 결과
 - 런처 및 Activity 라벨이 프로젝트 브랜드와 일치하도록 정렬함.
