@@ -30,10 +30,19 @@
 - 로컬: `scripts/export-play-store-release.ps1` PowerShell 구문 검사 성공.
 - 로컬: release AAB가 없는 상태에서 `scripts/export-play-store-release.ps1 -Version 2.0.1` 실행 시 `Release AAB not found. Build it first: .\gradlew.bat bundleRelease`로 안전하게 중단되는 것 확인.
 - CI: GitHub Actions `Android CI` 런 `26276209625` 성공 확인.
-- 릴리즈: 태그 `v2.0.1` 푸시 후 GitHub Release 및 산출물 확인 예정.
+- CI: GitHub Actions `Android CI` 런 `26276759639` 성공 확인.
+- 릴리즈: 태그 `v2.0.1` 푸시 후 GitHub Actions `Android Build & Release` 런 `26277342080` 성공 확인.
+- 릴리즈: GitHub Release `v2.0.1` 생성 및 수기 릴리즈 노트 본문 적용 확인.
+- 릴리즈 산출물:
+  - `app-release.aab` 11,916,967 bytes, SHA-256 `6ea8c78ce79033f4c0976c0783d2fb32b686cdf3c71ddec03451e660f6ae3d2e`
+  - `app-release.apk` 12,243,793 bytes, SHA-256 `0e68e525a5134f1cbc2b45034302f7f2cfb96f2318ec416289a31b9309abb1db`
+- 바탕화면 산출물:
+  - `C:\Users\jeiel\OneDrive\바탕 화면\zephyr-sky-v2.0.1.aab`
+  - `C:\Users\jeiel\OneDrive\바탕 화면\zephyr-sky-v2.0.1-release-notes.txt`
 
 ### 결과
-- 새 버전 생성 시 수기 릴리즈 노트, Play Console 노트, 버전 파일, 태그 푸시를 한 흐름으로 관리할 수 있게 준비함.
+- 새 버전 생성 시 수기 릴리즈 노트, Play Console 노트, 버전 파일, 태그 푸시, 바탕화면 업로드 파일 준비를 한 흐름으로 관리할 수 있게 정렬함.
+- `v2.0.1` 릴리즈와 Play Console 업로드용 로컬 산출물 준비를 완료함.
 
 ## [2026-05-22] 리뉴얼 이전 GitHub Issues 백로그 정리
 
