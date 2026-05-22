@@ -1,115 +1,123 @@
 # Zephyr Sky 앱 배포 가이드 (DEPLOYMENT.md)
 
-이 문서는 Zephyr Sky 앱 빌드 및 배포 절차를 설명합니다.
+이 문서는 Kotlin/Jetpack Compose Android 네이티브 전환 이후의 빌드 및 배포 절차를 설명합니다.
 
 ---
 
 ## 1. 빌드 자동화 구조
 
-GitHub Actions를 통해 릴리즈 APK 빌드가 자동화되어 있습니다.
+GitHub Actions는 Gradle Kotlin DSL 기반 Android 빌드를 실행합니다.
 
 ### 트리거 조건
-- **일반 푸시** (`git push`) → 소스코드만 업로드, 빌드 없음
-- **태그 푸시** (`git tag v1.x.x && git push origin v1.x.x`) → 빌드 + APK 생성 + GitHub 릴리즈 자동 등록
+- **일반 푸시 또는 PR**: `./gradlew test`, `./gradlew assembleDebug`, 에뮬레이터 앱 실행 스모크 테스트
+- **태그 푸시** (`vX.Y.Z`): `./gradlew test`, `./gradlew assembleRelease`, `./gradlew bundleRelease`, GitHub Release 생성
 
 ### 배포 흐름
+
+```bash
+git push origin main
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
-코드 수정 → git push (일반) → 개발 중 계속 반복
-배포할 때 → pubspec.yaml 버전 업 → git push → git tag vX.X.X → git push origin vX.X.X
-          → GitHub Actions 자동 빌드 → GitHub Releases에 APK 자동 등록
+
+태그 푸시 후 GitHub Actions가 릴리즈 APK/AAB를 빌드하고 GitHub Releases에 업로드합니다.
+
+---
+
+## 2. 로컬 빌드 및 테스트
+
+Android SDK 경로가 설정되어 있어야 합니다. 로컬 환경에서는 `ANDROID_HOME`을 지정하거나 프로젝트 루트의 `local.properties`에 `sdk.dir`을 설정합니다.
+
+```properties
+sdk.dir=C:\\Users\\<USER>\\AppData\\Local\\Android\\Sdk
+```
+
+검증 명령:
+
+```bash
+./gradlew test
+./gradlew assembleDebug
+```
+
+Windows PowerShell에서는 다음과 같이 실행할 수 있습니다.
+
+```powershell
+.\gradlew.bat test
+.\gradlew.bat assembleDebug
 ```
 
 ---
 
-## 2. 릴리즈 서명 설정 (완료)
+## 3. 릴리즈 서명 설정
 
-### 2.1 키스토어 정보
-릴리즈 APK는 릴리즈 키스토어로 서명됩니다. 키스토어 파일은 git에 포함되지 않으며 GitHub Secrets에 등록되어 CI에서 자동으로 복원됩니다.
+릴리즈 APK/AAB는 GitHub Secrets에 등록된 키스토어로 서명합니다. 키스토어 파일과 비밀번호는 저장소에 커밋하지 않습니다.
 
-- **파일명:** `release.keystore`
-- **Key Alias:** `zephyr-sky`
-- **패키지명:** `com.jeiel.zephyr_sky`
-
-> **중요:** 키스토어 파일과 비밀번호를 분실하면 동일 앱으로 업데이트 배포가 불가능합니다. 반드시 안전한 곳에 백업하세요.
-
-### 2.2 GitHub Secrets 등록 항목
-GitHub 저장소 **Settings > Secrets and variables > Actions**에 아래 4개가 등록되어 있습니다.
+### GitHub Secrets 등록 항목
 
 | Secret 이름 | 설명 |
 |-------------|------|
-| `RELEASE_KEYSTORE_BASE64` | 키스토어 파일 Base64 인코딩 값 |
+| `RELEASE_KEYSTORE_BASE64` | 릴리즈 키스토어 파일 Base64 인코딩 값 |
 | `RELEASE_STORE_PASSWORD` | 키스토어 비밀번호 |
-| `RELEASE_KEY_ALIAS` | 키 별칭 (`zephyr-sky`) |
+| `RELEASE_KEY_ALIAS` | 키 별칭 |
 | `RELEASE_KEY_PASSWORD` | 키 비밀번호 |
 
-어느 PC에서 작업하더라도 태그 푸시만 하면 동일한 서명의 릴리즈 APK가 생성됩니다.
+릴리즈 워크플로우는 `RELEASE_KEYSTORE_BASE64`를 `release.keystore`로 복원한 뒤, 다음 환경변수를 Gradle에 전달합니다.
+
+| 환경변수 | 용도 |
+|----------|------|
+| `KEYSTORE_PATH` | 복원된 키스토어 파일 경로 |
+| `RELEASE_STORE_PASSWORD` | 키스토어 비밀번호 |
+| `RELEASE_KEY_ALIAS` | 키 별칭 |
+| `RELEASE_KEY_PASSWORD` | 키 비밀번호 |
+
+`app/build.gradle.kts`의 `release` signingConfig는 위 환경변수를 우선 사용하며, 하위 호환을 위해 `RELEASE_STORE_FILE`, `STORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`도 인식합니다.
 
 ---
 
-## 3. 버전 관리 체계
+## 4. 버전 관리 체계
 
-### 버전 정의 위치
-버전은 **`pubspec.yaml` 한 곳에서만 관리**합니다.
+현재 앱 내부 버전은 `app/build.gradle.kts`에서 관리합니다.
 
-```yaml
-version: 1.0.8+8   # 형식: 버전명+빌드번호
+```kotlin
+versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 1
+versionName = (findProperty("VERSION_NAME") as String?) ?: "1.0"
 ```
 
-- `android/app/build.gradle.kts`는 `flutter.versionCode` / `flutter.versionName`으로 pubspec을 자동 참조
-- 별도로 버전을 수정할 파일 없음
-- **단, CI 빌드 시 빌드 번호(`+N`)는 GitHub Actions 실행 번호로 자동 덮어씌워짐** (버전명 `X.X.X`은 pubspec 값 그대로 사용)
+릴리즈 워크플로우는 태그명에서 `VERSION_NAME`을 계산하고 GitHub Actions 실행 번호를 `VERSION_CODE`로 전달합니다.
 
-### 버전 업 및 배포 절차
+예:
 
 ```bash
-# 1. pubspec.yaml 버전 수정 (버전명과 빌드번호 함께 올림)
-#    예: version: 1.0.8+8 → version: 1.0.9+9
-
-# 2. 커밋 및 푸시
-git add pubspec.yaml
-git commit -m "chore: 버전 X.X.X으로 업"
-git push origin main
-
-# 3. 태그 푸시 전 버전 검증 (필수)
-./scripts/check_version.sh vX.X.X
-
-# 4. 태그 생성 및 푸시 (빌드 트리거 — 이 시점에 APK 빌드 시작)
-git tag vX.X.X
-git push origin vX.X.X
+git tag v2.0.1
+git push origin v2.0.1
 ```
 
-> **체크 스크립트가 하는 일:**
-> - `pubspec.yaml` 버전과 입력한 태그 이름 일치 여부 확인
-> - 커밋되지 않은 변경사항 존재 여부 확인
-> - 로컬 커밋이 `origin/main`에 반영됐는지 확인
-> - 모두 통과해야만 태그 푸시 안내 메시지 출력
-
-빌드 진행 상황: https://github.com/jeiel85/zephyr-sky/actions  
-릴리즈 페이지: https://github.com/jeiel85/zephyr-sky/releases
+위 태그는 CI에서 `VERSION_NAME=2.0.1`로 빌드됩니다.
 
 ---
 
-## 4. 현재 배포 상태
+## 5. 산출물 위치
 
-- **GitHub Release:** 운영 중 ([릴리즈 페이지](https://github.com/jeiel85/zephyr-sky/releases))
-- **Brand Page:** 운영 중 ([소개 페이지](https://jeiel85.github.io/zephyr-sky/))
-    - **주의:** GitHub 저장소의 **Settings > Pages > Build and deployment > Source**가 반드시 **"GitHub Actions"**로 설정되어 있어야 합니다.
-- **배포 파일:** `app-release.apk` (릴리즈 서명 APK)
+로컬 및 CI 빌드 산출물은 Gradle Android 표준 경로에 생성됩니다.
 
----
-
-## 5. 구글 플레이 스토어 배포 (향후)
-
-### 스토어 등록 정보
-- **앱 이름:** Zephyr Sky
-- **간단한 설명:** 지적인 산들바람처럼, 당신의 일상을 채우는 날씨
-- **자세한 설명:** 복잡한 정보는 걷어내고 현재 위치 및 검색한 도시의 핵심 날씨 정보만 유려한 그라데이션 UI로 제공합니다.
-- **아이콘:** 512x512 PNG (`assets/icon/app_icon.png`)
-- **스크린샷:** 폰, 7인치 태블릿, 10인치 태블릿용 스크린샷 각 2~8장 필요
-
-플레이 스토어 자동 배포가 필요할 경우 AAB 빌드 및 `SERVICE_ACCOUNT_JSON` 시크릿 추가가 필요합니다.
+| 산출물 | 경로 |
+|--------|------|
+| Debug APK | `app/build/outputs/apk/debug/*.apk` |
+| Release APK | `app/build/outputs/apk/release/*.apk` |
+| Release AAB | `app/build/outputs/bundle/release/*.aab` |
 
 ---
 
-## 6. 유지보수
-- 배포가 완료될 때마다 `HISTORY.md`를 갱신하여 이력을 관리합니다.
+## 6. 현재 배포 상태
+
+- **GitHub Actions**: Android Gradle 기반 CI/Release 워크플로우 사용
+- **GitHub Release**: 태그 푸시로 APK/AAB 자동 업로드
+- **Brand Page**: 운영 중 ([소개 페이지](https://jeiel85.github.io/zephyr-sky/))
+
+---
+
+## 7. 유지보수
+
+- 배포 또는 CI 변경 후 `HISTORY.md`와 `CHANGELOG.md`를 갱신합니다.
+- 실제로 실행하지 않은 로컬/CI 검증은 성공으로 기록하지 않습니다.
+- 릴리즈 키스토어, 비밀번호, API 키 등 비밀정보는 GitHub Secrets 또는 로컬 비공개 설정으로만 관리합니다.

@@ -1,9 +1,9 @@
-name: Flutter CI
+name: Android CI
 
 on:
   push:
-    branches:   
-      - main    
+    branches:
+      - main
   pull_request:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test-and-build:
-    name: Test and Build Debug APK
+    name: Gradle Test and Debug Build
     runs-on: ubuntu-latest
 
     steps:
@@ -24,26 +24,23 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
-      - name: Run tests
-        run: flutter test
+      - name: Run unit tests
+        run: ./gradlew test
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: ./gradlew assembleDebug
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
 
   app-launch-smoke:
     name: Android Emulator App Launch Smoke Test
@@ -60,20 +57,17 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: Download debug APK artifact
         uses: actions/download-artifact@v4
         with:
           name: app-debug-apk
-          path: build/app/outputs/flutter-apk/
+          path: app/build/outputs/apk/debug/
 
       - name: Launch app on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -82,10 +76,7 @@ jobs:
           arch: x86_64
           profile: pixel_7
           script: |
-            # 에뮬레이터 부팅 대기 강화
             adb wait-for-device
-            # 스트리밍 방식이 아닌 기존 방식으로 설치 시도 (Broken pipe 방지)
-            adb install --no-streaming -r build/app/outputs/flutter-apk/app-debug.apk
-            # 앱 실행 및 프로세스 확인
-            adb shell am start -W -n com.jeiel.zephyr_sky.debug/com.jeiel.zephyr_sky.MainActivity
-            adb shell pidof com.jeiel.zephyr_sky.debug
+            adb install --no-streaming -r app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -W -n com.example/.MainActivity
+            adb shell pidof com.example

@@ -1,5 +1,38 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-22] Kotlin/Compose Android Native 빌드 및 릴리즈 파이프라인 정렬
+
+### 작업
+- `.github/workflows/ci.yml`에서 Flutter 설정을 제거하고 Gradle 기반 `./gradlew test`, `./gradlew assembleDebug` 및 Android 에뮬레이터 스모크 테스트 흐름으로 전환.
+- `.github/workflows/release.yml`에서 Flutter 릴리즈 빌드를 제거하고 Gradle 기반 `test`, `assembleRelease`, `bundleRelease`, GitHub Release 업로드 흐름으로 전환.
+- `settings.gradle.kts`의 `rootProject.name`을 `Zephyr Sky`로 변경.
+- `app/build.gradle.kts`의 릴리즈 signingConfig를 GitHub Secrets 환경변수(`KEYSTORE_PATH`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`)와 호환되도록 점검 및 보완.
+- `debug.keystore`가 없을 때도 Android 기본 debug signing으로 `assembleDebug`가 진행되도록 debug signingConfig 적용 조건을 보완.
+- 릴리즈 워크플로우에서 태그명 기반 `VERSION_NAME`과 GitHub Actions 실행 번호 기반 `VERSION_CODE`를 Gradle property로 전달하도록 구성.
+- `DEPLOYMENT.md`를 Kotlin/Compose Android Native 빌드 및 배포 절차에 맞게 전면 업데이트.
+
+### 변경 파일
+- `.github/workflows/ci.yml`
+- `.github/workflows/release.yml`
+- `settings.gradle.kts`
+- `app/build.gradle.kts`
+- `README.md`
+- `DEPLOYMENT.md`
+- `HISTORY.md`
+- `CHANGELOG.md`
+
+### 검증
+- 로컬: `.\gradlew.bat test` 실행 시 Android SDK 경로 미설정으로 구성 단계에서 실패.
+- 로컬: `.\gradlew.bat assembleDebug` 최초 실행 시 Android SDK 경로 미설정으로 구성 단계에서 실패.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
+- 원인: 초기 실패는 `ANDROID_HOME` 환경변수 또는 `local.properties`의 `sdk.dir` 미설정, 이후 debug signingConfig의 `debug.keystore` 강제 참조 확인.
+- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+
+### 결과
+- Flutter 기반 CI/CD 잔여 구성을 Android Gradle 빌드 기준으로 정렬함.
+- 로컬 검증은 SDK 경로를 명령 환경변수로 지정하여 완료함.
+
 ## [2026-05-22] Flutter 프로젝트에서 Kotlin/Compose Android 네이티브 Weather Journal 프로젝트로의 대규모 프레임워크 전환
 
 ### 작업 내용

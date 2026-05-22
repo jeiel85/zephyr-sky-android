@@ -1,4 +1,4 @@
-name: Flutter Build & Release
+name: Android Build & Release
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
       - 'v*'
 
 permissions:
-  contents: write # 릴리즈 생성을 위해 쓰기 권한 명시
+  contents: write
 
 jobs:
   build:
-    name: Build, Test and Release APK
+    name: Gradle Build, Test and Release
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,72 +23,53 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Clean pubspec.lock
-        run: rm -f pubspec.lock
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run tests with coverage
-        run: flutter test --coverage
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/lcov.info
-
-      - name: Check coverage threshold (30%)
+      - name: Resolve release version
         run: |
-          sudo apt-get update && sudo apt-get install -y lcov
-          COVERAGE=$(lcov --summary coverage/lcov.info | grep "lines" | sed 's/.*: \(.*\)%.*/\1/' | awk '{print int($1)}')
-          echo "Code coverage: $COVERAGE%"
-          if [ "$COVERAGE" -lt 30 ]; then
-            echo "Coverage $COVERAGE% is below threshold of 30%"
-            exit 1
-          fi
+          VERSION_NAME="${GITHUB_REF_NAME#v}"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=${GITHUB_RUN_NUMBER}" >> "$GITHUB_ENV"
 
-      - name: Generate App Icons
-        run: dart run flutter_launcher_icons
+      - name: Run unit tests
+        run: ./gradlew test
 
       - name: Decode release keystore
-        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+        run: echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > release.keystore
 
       - name: Build APK
         env:
-          RELEASE_STORE_FILE: release.keystore
+          KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: flutter build apk --release --build-number=${{ github.run_number }}
-      
-      - name: Build AAB (Android App Bundle)
+        run: ./gradlew assembleRelease -PVERSION_NAME="$VERSION_NAME" -PVERSION_CODE="$VERSION_CODE"
+
+      - name: Build AAB
         env:
-          RELEASE_STORE_FILE: release.keystore
+          KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: flutter build appbundle --release --build-number=${{ github.run_number }}
-      
+        run: ./gradlew bundleRelease -PVERSION_NAME="$VERSION_NAME" -PVERSION_CODE="$VERSION_CODE"
+
       - name: Check Build Artifacts
         run: |
           echo "=== APK Files ==="
-          ls -R build/app/outputs/flutter-apk/
+          ls -R app/build/outputs/apk/release/
           echo "=== AAB Files ==="
-          ls -R build/app/outputs/bundle/
-      
+          ls -R app/build/outputs/bundle/release/
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/app/outputs/flutter-apk/*.apk
-            build/app/outputs/bundle/release/*.aab
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
           generate_release_notes: true
           draft: false
           prerelease: false

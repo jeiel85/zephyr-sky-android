@@ -51,11 +51,8 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
 
 *참고: `.env.example` 파일을 복사하여 `.env`로 리네임한 후 값을 변경하시면 편리합니다.*
 
-### 3. 디버그 서명 설정 제거 (필요한 경우)
-로컬 빌드가 정상 작동하지 않을 경우, `app/build.gradle.kts` 파일에서 다음 라인을 주석 처리하거나 제거하십시오:
-```kotlin
-signingConfig = signingConfigs.getByName("debugConfig")
-```
+### 3. 로컬 Android SDK 확인
+로컬 빌드가 정상 작동하지 않을 경우 `ANDROID_HOME` 환경변수를 지정하거나, 프로젝트 루트의 `local.properties`에 Android SDK 경로를 설정하십시오.
 
 ### 4. 실행 및 배포
 에뮬레이터 또는 물리적 Android 기기를 연결하고, 상단의 **Run** 버튼을 눌러 앱을 실행시킵니다.
