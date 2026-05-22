@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-  namespace = "com.example"
+  namespace = "com.jeiel.zephyr_sky"
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.example"
+    applicationId = "com.jeiel.zephyr_sky"
     minSdk = 24
     targetSdk = 36
-    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 201
-    versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.1"
+    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 202
+    versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.2"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

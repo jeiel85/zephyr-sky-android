@@ -1,10 +1,10 @@
-package com.example
+package com.jeiel.zephyr_sky
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
-import com.example.ui.theme.MyApplicationTheme
-import com.example.ui.weather.WeatherScreen
-import com.example.ui.weather.WeatherViewModel
+import com.jeiel.zephyr_sky.ui.theme.MyApplicationTheme
+import com.jeiel.zephyr_sky.ui.weather.WeatherScreen
+import com.jeiel.zephyr_sky.ui.weather.WeatherViewModel
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule

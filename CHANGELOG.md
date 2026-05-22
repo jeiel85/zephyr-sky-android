@@ -1,5 +1,21 @@
 # CHANGELOG.md
 
+## v2.0.2 - 2026-05-22
+
+### Fixed
+- Android 패키지 식별자를 템플릿 값 `com.example`에서 `com.jeiel.zephyr_sky`로 정렬했습니다. Android Native 리뉴얼 전 v1.x 빌드와 동일한 식별자로 복귀해 Play Store 업데이트 경로를 유지합니다.
+
+### Refactor
+- `app/src/main`, `app/src/test`, `app/src/androidTest`의 14개 Kotlin 소스 파일을 `com/example/`에서 `com/jeiel/zephyr_sky/`로 이동하고 패키지/임포트 선언을 일괄 갱신했습니다.
+- `app/build.gradle.kts`의 `namespace`와 `applicationId`, 그리고 versionCode/versionName 기본값을 v2.0.2 기준으로 정렬했습니다.
+
+### Build / CI
+- GitHub Actions `Android CI`의 에뮬레이터 스모크 테스트가 `com.jeiel.zephyr_sky/.MainActivity`를 실행하도록 갱신했습니다.
+
+### Verification
+- 로컬 `./gradlew test`는 Android SDK 경로를 명령 환경변수로 지정해 성공했습니다.
+- 로컬 `./gradlew assembleDebug --no-configuration-cache`는 Android SDK 경로를 명령 환경변수로 지정해 성공했습니다.
+
 ## v2.0.1 - 2026-05-22
 
 ### Fixed

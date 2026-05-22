@@ -1,4 +1,4 @@
-package com.example
+package com.jeiel.zephyr_sky
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,10 +13,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.ui.theme.MyApplicationTheme
-import com.example.ui.weather.DarkThemeSetting
-import com.example.ui.weather.WeatherScreen
-import com.example.ui.weather.WeatherViewModel
+import com.jeiel.zephyr_sky.ui.theme.MyApplicationTheme
+import com.jeiel.zephyr_sky.ui.weather.DarkThemeSetting
+import com.jeiel.zephyr_sky.ui.weather.WeatherScreen
+import com.jeiel.zephyr_sky.ui.weather.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

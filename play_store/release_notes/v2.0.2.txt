@@ -1,0 +1,18 @@
+<ko-KR>
+v2.0.2 패키지 식별자 정렬
+
+수정
+• Android 패키지 식별자를 com.jeiel.zephyr_sky로 정렬해 v1.x와 동일한 식별자로 복귀
+
+빌드/배포
+• CI 에뮬레이터 스모크 테스트와 빌드 구성을 새 패키지 식별자 기준으로 갱신
+</ko-KR>
+<en-US>
+v2.0.2 Application ID alignment
+
+Fixes
+• Restored Android applicationId to com.jeiel.zephyr_sky to match the v1.x identifier
+
+Build and release
+• Updated CI emulator smoke test and build configuration to use the new package identifier
+</en-US>

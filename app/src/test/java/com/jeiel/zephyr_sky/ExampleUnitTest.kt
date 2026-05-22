@@ -1,4 +1,4 @@
-package com.example
+package com.jeiel.zephyr_sky
 
 import org.junit.Assert.*
 import org.junit.Test

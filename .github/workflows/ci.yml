@@ -78,5 +78,5 @@ jobs:
           script: |
             adb wait-for-device
             adb install --no-streaming -r app/build/outputs/apk/debug/app-debug.apk
-            adb shell am start -W -n com.example/.MainActivity
-            adb shell pidof com.example
+            adb shell am start -W -n com.jeiel.zephyr_sky/com.jeiel.zephyr_sky.MainActivity
+            adb shell pidof com.jeiel.zephyr_sky

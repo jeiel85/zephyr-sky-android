@@ -1,12 +1,12 @@
-package com.example.ui.weather
+package com.jeiel.zephyr_sky.ui.weather
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.api.CurrentWeatherResponse
-import com.example.data.api.ForecastResponse
-import com.example.data.api.FineDustInfo
-import com.example.data.repository.WeatherRepository
+import com.jeiel.zephyr_sky.data.api.CurrentWeatherResponse
+import com.jeiel.zephyr_sky.data.api.ForecastResponse
+import com.jeiel.zephyr_sky.data.api.FineDustInfo
+import com.jeiel.zephyr_sky.data.repository.WeatherRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

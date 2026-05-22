@@ -1,4 +1,4 @@
-package com.example.ui.weather
+package com.jeiel.zephyr_sky.ui.weather
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -40,9 +40,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.api.CurrentWeatherResponse
-import com.example.data.api.ForecastItem
-import com.example.data.api.ForecastResponse
+import com.jeiel.zephyr_sky.data.api.CurrentWeatherResponse
+import com.jeiel.zephyr_sky.data.api.ForecastItem
+import com.jeiel.zephyr_sky.data.api.ForecastResponse
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
@@ -380,7 +380,7 @@ fun WeatherScreen(
 fun WeatherContentBlock(
     current: CurrentWeatherResponse,
     forecast: ForecastResponse,
-    fineDust: com.example.data.api.FineDustInfo,
+    fineDust: com.jeiel.zephyr_sky.data.api.FineDustInfo,
     isFahrenheit: Boolean,
     isApiKeyConfigured: Boolean,
     weatherId: Int,
@@ -931,7 +931,7 @@ fun WeatherAnimator(weatherId: Int) {
 
 @Composable
 fun FineDustSection(
-    fineDust: com.example.data.api.FineDustInfo,
+    fineDust: com.jeiel.zephyr_sky.data.api.FineDustInfo,
     isDarkTheme: Boolean = false
 ) {
     Column(
