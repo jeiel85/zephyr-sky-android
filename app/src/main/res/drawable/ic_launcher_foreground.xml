@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Warm Golden Sun Behind Cloud -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M56,40m-15,0a15,15 0 1,1 30,0a15,15 0 1,1 -30,0" />
+    
+    <!-- Sun Ray Accents for Modern Polish -->
+    <path
+        android:fillColor="#FFE082"
+        android:pathData="M56,18 L56,22 M56,58 L56,62 M34,40 L38,40 M74,40 L78,40"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FFD54F"
+        android:strokeLineCap="round"/>
+
+    <!-- Precise Minimalist White Cloud Compound Path -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 36 68 L 70 68 A 12 12 0 0 0 70 44 A 12 12 0 0 0 62 47 A 15 15 0 0 0 35 48 A 11 11 0 0 0 36 68 Z" />
+
+</vector>

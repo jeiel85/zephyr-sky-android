@@ -1,0 +1,6 @@
+{
+  "name": "Weather",
+  "description": "A beautiful, minimalist, and modern weather application featuring fluid animations and smooth weather visualizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,25 +1,22 @@
 # CHANGELOG.md
 
-## v1.3.4 - 2026-05-06
-
-### Build / CI
-- 태그 릴리즈 워크플로우(`release.yml`)의 커버리지 게이트를 현재 테스트 커버리지 기준(30%)으로 조정해 릴리즈 파이프라인 실패를 방지.
+## v2.0.0 - 2026-05-22
 
 ### Changed
-- 앱 내부 버전을 `1.3.4+17`로 상향하고 README 버전 배지를 동기화.
+- **프레임워크 전면 개편**: 기존 Flutter 기반의 앱 구조를 완전히 갈아엎고 **Kotlin & Jetpack Compose 기반 Android 네이티브 에디토리얼 날씨 저널 앱**으로 아키텍처 및 코드를 완전 전환.
+- **아키텍처 및 디자인 패턴**: Clean Architecture 및 Jetpack MVVM (ViewModel, StateFlow) 패턴을 채택하여 비즈니스 로직과 UI 분리.
 
-### Verification
-- 로컬: 미실행 (CI에서 검증 예정)
-- CI: 태그 푸시 후 GitHub Actions 모니터링
+### Added
+- **Gemini AI 에디토리얼 저널 생성**: Google Firebase AI SDK를 연동하여 실시간 기상 상태에 기반한 고유의 에디토리얼 기사와 일기 본문을 생성하는 AI 저널 비서 구축.
+- **Room Database 로컬 저장소**: 작성한 날씨 저널 및 사진 메타데이터를 기기에 영속화하여 오프라인에서도 조회할 수 있는 영속성 레이어 확보.
+- **CameraX 미디어 통합**: 날씨를 직접 포착해 저널 기록에 시각적으로 풍부한 사진을 촬영 및 저장하는 기능을 내장.
+- **Roborazzi 비주얼 회귀 테스트**: JUnit 4, Robolectric 및 Roborazzi를 통한 UI 스크린샷 렌더링 검증 테스트 자동화 마련.
+- **Gradle 버전 카탈로그 & Gradle Wrapper**: Gradle 8.10.2 및 `libs.versions.toml` 카탈로그를 활용한 현대적인 빌드 의존성 체계 확보.
 
-## v1.3.3 - 2026-05-06
+### Removed
+- **Flutter 프레임워크 리소스 제거**: `lib/`, `ios/`, `web/`, `windows/`, `macos/`, `linux/`, `pubspec.yaml` 등 기존 하이브리드 리소스 전면 폐기.
 
-### Changed
-- 앱 내부 버전을 `1.3.3+16`으로 상향하고 README 버전 배지를 동기화.
-
-### Verification
-- 로컬: 미실행 (CI에서 검증 예정)
-- CI: 태그 푸시 후 GitHub Actions 모니터링
+---
 
 ## v1.3.1 - 2026-05-05
 

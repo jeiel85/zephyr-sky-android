@@ -19,8 +19,8 @@ History Document: HISTORY.md
 Changelog: CHANGELOG.md
 Task Document: ROADMAP.md
 Decision Log: HISTORY.md
-Version Files: pubspec.yaml, android/app/build.gradle.kts
-Build/Test Commands: flutter test, flutter build apk
+Version Files: app/build.gradle.kts
+Build/Test Commands: ./gradlew test, ./gradlew assembleDebug
 Release Trigger: tag push
 CI System: GitHub Actions
 ```
@@ -264,19 +264,17 @@ git status
 
 변경 후 가능한 범위에서 아래 순서로 검증합니다.
 
-1. 정적 검사 또는 린트 (`flutter analyze`)
-2. 타입 체크 (Dart strong mode)
-3. 단위 테스트 (`flutter test`)
-4. 통합 테스트 또는 E2E 테스트
-5. 빌드 (`flutter build apk`)
-6. 앱 실행 또는 핵심 플로우 수동 확인
+1. 정적 검사 또는 린트 (`./gradlew lint`)
+2. 단위 테스트 (`./gradlew test`)
+3. 빌드 (`./gradlew assembleDebug`)
+4. 앱 실행 또는 핵심 플로우 수동 확인
 
 프로젝트별 명령:
 
 ```bash
-flutter test
-flutter analyze
-flutter build apk
+./gradlew test
+./gradlew lint
+./gradlew assembleDebug
 ```
 
 검증 실패 시 실패 로그를 읽고 원인을 수정한 뒤 다시 실행합니다. 환경 문제로 검증이 불가능하면 어떤 명령이 왜 실패했는지 기록하고 보고합니다.
@@ -446,7 +444,7 @@ git diff
 릴리즈 전에는 아래 항목이 서로 일치하는지 확인합니다.
 
 - 태그 버전
-- 앱 내부 버전 (pubspec.yaml)
+- 앱 내부 버전 (app/build.gradle.kts)
 - `CHANGELOG.md`
 - GitHub Release 제목
 - 릴리즈 노트
@@ -459,16 +457,15 @@ git diff
 버전 변경 시 프로젝트에 정의된 모든 버전 표기 위치를 동시에 갱신합니다.
 
 ```text
-pubspec.yaml (version 필드)
-android/app/build.gradle.kts (자동 참조)
-README badge
+app/build.gradle.kts (versionCode 및 versionName 필드)
+README.md
 CHANGELOG.md
 ```
 
 태그를 만들기 전에는 반드시 실제 앱 내부 버전, 문서 버전, 태그 버전이 일치하는지 확인합니다.
 
 ```bash
-grep "^version:" pubspec.yaml
+grep "versionName =" app/build.gradle.kts
 ```
 
 버전 태그는 기본적으로 SemVer 형식의 `vX.Y.Z`를 사용합니다.
@@ -579,7 +576,7 @@ gh release view vX.Y.Z
 - 배포용 정적 파일 (website/ 산출물)
 - 문서 사이트 산출물
 - 프로젝트에서 명시적으로 추적하는 generated file
-- lockfile (pubspec.lock)
+- lockfile
 - 네이티브 프로젝트 동기화 결과물처럼 프로젝트 정책상 필요한 파일
 
 커밋 전 `.gitignore`와 `git status`를 확인합니다.
@@ -674,7 +671,7 @@ gh release view vX.Y.Z
 원인: 버전 파일 일부만 수정하고 태그를 생성함
 해결: 모든 버전 위치를 동기화한 뒤 태그 재생성
 다음부터 지킬 규칙: 태그 생성 전 Version Files 전체를 검사한다
-관련 파일: pubspec.yaml, build.gradle.kts, CHANGELOG.md
+관련 파일: app/build.gradle.kts, CHANGELOG.md
 ```
 
 ```text
@@ -683,14 +680,6 @@ gh release view vX.Y.Z
 해결: MainActivity.kt를 올바른 경로로 이동 및 패키지 선언 수정
 다음부터 지킬 규칙: 패키지명 변경 시 build.gradle.kts, MainActivity.kt, AndroidManifest.xml을 함께 확인한다
 관련 파일: build.gradle.kts, MainActivity.kt, AndroidManifest.xml
-```
-
-```text
-문제: LocaleDataException으로 인한 회색 화면
-원인: initializeDateFormatting('ko_KR', null) 호출 누락
-해결: main.dart 초기화 로직에 추가
-다음부터 지킬 규칙: 다국어 관련 코드 추가 시 반드시 locale 초기화를 확인한다
-관련 파일: main.dart
 ```
 
 ---
@@ -713,35 +702,34 @@ gh release view vX.Y.Z
 
 - **프로젝트 명**: Zephyr Sky (Sophisticated Minimalist Weather App)
 - **디자인 철학**: 정제된 그라데이션 UI, 최소한의 정보 노출, 유려한 애니메이션.
-- **아키텍처**: Clean Architecture
-    - `lib/core/`: 공통 유틸리티, 테마, 서비스 초기화
-    - `lib/data/`: API 소스, 리포지토리 구현체, 데이터 모델
-    - `lib/domain/`: 엔티티, 리포지토리 인터페이스, 유스케이스
-    - `lib/presentation/`: UI 레이어 (Screens, Widgets), Provider 상태 관리
+- **아키텍처**: Clean Architecture + MVVM 패턴
+  - `app/src/main/java/com/example/data/`: Retrofit, Room DB, Repository 구현체, 데이터 모델
+  - `app/src/main/java/com/example/ui/`: Jetpack Compose UI (Screens, Components, Theme, ViewModels)
+  - `app/src/main/java/com/example/MainActivity.kt`: 메인 진입 액티비티
 
 ### 코드 스타일
-- Flutter Stable 채널 사용.
-- `Provider`를 이용한 상태 관리.
-- 비즈니스 로직은 `domain` 및 `data` 레이어에, UI 로직은 `presentation` 레이어에 엄격히 분리.
+- Modern Android 개발 규격 (Kotlin, Jetpack Compose) 준수.
+- Jetpack ViewModel을 통한 상태 관리 및 UI 이벤트 처리.
+- 로직과 UI 렌더링 코드의 엄격한 분리.
 
 ### 빌드 및 배포 제약
-- 안드로이드 빌드 시 SDK 36 규격을 준수하고, R8 관련 Proguard 규칙(`android/app/proguard-rules.pro`)을 유지할 것.
-- GitHub Actions 워크플로우(`release.yml`, `pages.yml`) 수정 시 권한 설정을 엄격히 검토할 것.
+- 안드로이드 빌드 시 SDK 36 규격을 준수하고, R8 관련 Proguard 규칙(`app/proguard-rules.pro`)을 유지할 것.
+- GitHub Actions 워크플로우 수정 시 빌드 환경을 Gradle Kotlin 방식으로 맞추어 줄 것.
 
 ---
 
 ## Appendix B. 핵심 기술 스택
 
-- **Framework**: Flutter
-- **State Management**: Provider (flutter_riverpod)
-- **Local Storage**: SharedPreferences (마지막 위치 저장용 등)
-- **API**: Open-Meteo API (날씨 + 대기질)
-- **Charts**: fl_chart
-- **Notifications**: flutter_local_notifications
-- **Widget**: home_widget (안드로이드 홈 스크린 위젯)
-- **Fonts**: google_fonts (Lato)
-- **i18n**: intl (한국어)
-- **CI/CD**: GitHub Actions (APK 릴리즈 및 GitHub Pages 배포)
+- **Framework**: Android Native (Kotlin, Jetpack Compose)
+- **State Management**: Jetpack ViewModel
+- **Local Storage**: Room Database, DataStore Preferences
+- **AI SDK**: Firebase AI SDK (Gemini SDK)
+- **Network**: Retrofit 2, OkHttp 3, Moshi
+- **Camera**: CameraX (Camera2)
+- **Location**: Google Play Services Location
+- **UI Components**: Material 3, Coil (Image loading)
+- **Testing**: JUnit 4, Robolectric, Roborazzi (Screenshot testing)
+- **Build System**: Gradle Kotlin DSL, Version Catalogs (`libs.versions.toml`)
 
 ---
 
@@ -763,7 +751,5 @@ gh release view vX.Y.Z
 
 ## Appendix D. 자주 발생하는 문제 및 해결 (Troubleshooting)
 
-- **Localization**: `initializeDateFormatting('ko_KR', null)` 호출 필수.
-- **Android Package Name**: `com.jeiel.zephyr_sky` (폴더 구조와 `build.gradle.kts` 일치 확인).
-- **GitHub Pages**: 배포 소스가 "GitHub Actions"로 설정되어 있는지 항상 확인할 것.
-- **R8 빌드**: `proguard-rules.pro`에 Flutter 프레임워크 및 플러그인 보존 규칙이 포함되어 있어야 함.
+- **Gemini API Key**: 로컬 테스트 진행 시 `.env` 파일에 `GEMINI_API_KEY` 필수 입력.
+- **R8/Proguard**: Room DB 및 Moshi/Retrofit 등 JSON 파싱 라이브러리 사용에 필요한 난독화 예외 규칙 처리 필수.
