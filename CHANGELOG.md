@@ -2,11 +2,15 @@
 
 ## Unreleased - 2026-05-22
 
+### Fixed
+- Android 앱 런처 및 Activity 표시명이 템플릿 값 `Weather`로 보이던 문제를 `Zephyr Sky`로 정렬했습니다.
+
 ### Build / CI
 - GitHub Actions CI를 Flutter 명령에서 Gradle Kotlin DSL 기반 `./gradlew test`, `./gradlew assembleDebug` 흐름으로 전환했습니다.
 - 태그 릴리즈 워크플로우를 Gradle 기반 `assembleRelease` 및 `bundleRelease` 산출물 업로드 방식으로 전환했습니다.
 - Gradle 프로젝트명을 `Zephyr Sky`로 변경하고, 릴리즈 서명 환경변수 처리를 GitHub Secrets 기반으로 정렬했습니다.
 - `debug.keystore`가 없는 로컬/CI 환경에서도 Android 기본 debug signing으로 디버그 APK를 빌드할 수 있도록 보완했습니다.
+- GitHub Actions `Android CI`에서 테스트, 디버그 빌드, 에뮬레이터 앱 실행 검증 성공을 확인했습니다.
 
 ### Documentation
 - `DEPLOYMENT.md`를 Kotlin/Compose Android Native 빌드, 서명, 버전, 산출물 경로 기준으로 갱신했습니다.

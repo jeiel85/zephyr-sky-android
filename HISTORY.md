@@ -27,11 +27,32 @@
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
 - 원인: 초기 실패는 `ANDROID_HOME` 환경변수 또는 `local.properties`의 `sdk.dir` 미설정, 이후 debug signingConfig의 `debug.keystore` 강제 참조 확인.
-- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- CI: GitHub Actions `Android CI` 런 `26273486101` 성공 확인.
 
 ### 결과
 - Flutter 기반 CI/CD 잔여 구성을 Android Gradle 빌드 기준으로 정렬함.
 - 로컬 검증은 SDK 경로를 명령 환경변수로 지정하여 완료함.
+- 원격 `main` 푸시 후 GitHub Actions 기준 테스트, 디버그 빌드, 에뮬레이터 앱 실행 검증까지 성공함.
+
+## [2026-05-22] Android 앱 표시명 브랜드 정렬
+
+### 작업
+- Kotlin/Compose 전환 후 템플릿 값으로 남아 있던 Android 앱 표시명을 `Weather`에서 `Zephyr Sky`로 변경.
+
+### 변경 파일
+- `app/src/main/res/values/strings.xml`
+- `app/src/test/java/com/example/ExampleRobolectricTest.kt`
+- `HISTORY.md`
+- `CHANGELOG.md`
+
+### 검증
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 최초 실행 시 기존 테스트 기대값(`Weather`) 불일치로 실패.
+- 로컬: 앱 표시명 테스트 기대값을 `Zephyr Sky`로 정렬한 뒤 `.\gradlew.bat test` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
+- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+
+### 결과
+- 런처 및 Activity 라벨이 프로젝트 브랜드와 일치하도록 정렬함.
 
 ## [2026-05-22] Flutter 프로젝트에서 Kotlin/Compose Android 네이티브 Weather Journal 프로젝트로의 대규모 프레임워크 전환
 
