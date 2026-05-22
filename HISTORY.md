@@ -1,5 +1,36 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-22] Nightseed Survivor 방식의 새 버전 릴리즈 절차 도입
+
+### 작업
+- `D:\Project\nightseed-survivor`의 새 버전 생성 절차를 확인.
+- GitHub Release 본문용 수기 릴리즈 노트를 `docs/releases/vX.Y.Z.md`에 보관하는 방식을 Zephyr Sky에 도입.
+- Play Console 입력용 다국어 릴리즈 노트를 `play_store/release_notes/vX.Y.Z.txt`에 별도 보관하는 방식을 도입.
+- 태그 릴리즈 워크플로우가 `docs/releases/<tag>.md`를 GitHub Release 본문으로 사용하도록 변경.
+- 앱 내부 기본 버전을 `2.0.1` / `versionCode 201`로 승격하고, 태그명과 `versionName` 불일치 시 릴리즈 빌드를 중단하도록 보완.
+- `CHANGELOG.md`의 Unreleased 항목을 `v2.0.1 - 2026-05-22` 릴리즈 섹션으로 승격.
+
+### 변경 파일
+- `.github/workflows/release.yml`
+- `app/build.gradle.kts`
+- `CHANGELOG.md`
+- `DEPLOYMENT.md`
+- `docs/releases/README.md`
+- `docs/releases/v2.0.1.md`
+- `play_store/release_notes/README.md`
+- `play_store/release_notes/v2.0.1.txt`
+- `HISTORY.md`
+
+### 검증
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
+- 로컬: `app/build/outputs/apk/debug/output-metadata.json`에서 `versionCode 201`, `versionName 2.0.1` 확인.
+- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- 릴리즈: 태그 `v2.0.1` 푸시 후 GitHub Release 및 산출물 확인 예정.
+
+### 결과
+- 새 버전 생성 시 수기 릴리즈 노트, Play Console 노트, 버전 파일, 태그 푸시를 한 흐름으로 관리할 수 있게 준비함.
+
 ## [2026-05-22] 리뉴얼 이전 GitHub Issues 백로그 정리
 
 ### 작업
@@ -14,7 +45,7 @@
 ### 검증
 - GitHub: `gh issue list --state open --limit 50` 결과 열린 이슈 없음 확인.
 - 로컬: 문서 이력 변경만 수행하여 빌드/테스트는 생략.
-- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- CI: GitHub Actions `Android CI` 런 `26275335018` 성공 확인.
 
 ### 결과
 - GitHub Issues 백로그를 리뉴얼 이후 기준으로 새로 시작할 수 있도록 초기화함.

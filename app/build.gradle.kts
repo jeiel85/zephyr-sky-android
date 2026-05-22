@@ -14,8 +14,8 @@ android {
     applicationId = "com.example"
     minSdk = 24
     targetSdk = 36
-    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 1
-    versionName = (findProperty("VERSION_NAME") as String?) ?: "1.0"
+    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 201
+    versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

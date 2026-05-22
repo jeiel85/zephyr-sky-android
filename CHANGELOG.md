@@ -1,6 +1,6 @@
 # CHANGELOG.md
 
-## Unreleased - 2026-05-22
+## v2.0.1 - 2026-05-22
 
 ### Fixed
 - Android 앱 런처 및 Activity 표시명이 템플릿 값 `Weather`로 보이던 문제를 `Zephyr Sky`로 정렬했습니다.
@@ -15,10 +15,13 @@
 ### Documentation
 - `DEPLOYMENT.md`를 Kotlin/Compose Android Native 빌드, 서명, 버전, 산출물 경로 기준으로 갱신했습니다.
 - `README.md`의 로컬 빌드 안내를 Android SDK 경로 설정 기준으로 갱신했습니다.
+- Nightseed Survivor 방식과 동일하게 GitHub Release용 수기 릴리즈 노트와 Play Console용 다국어 릴리즈 노트 파일을 분리 관리하도록 추가했습니다.
+- 리뉴얼 이전 GitHub Issues 백로그를 모두 닫고, 리뉴얼 이후 기준으로 새 이슈를 시작할 수 있도록 정리했습니다.
 
 ### Verification
 - 로컬 `test`는 Android SDK 경로를 명령 환경변수로 지정해 성공했습니다.
 - 로컬 `assembleDebug --no-configuration-cache`는 Android SDK 경로를 명령 환경변수로 지정해 성공했습니다.
+- GitHub Actions `Android CI` 런 `26274383792`에서 테스트, 디버그 빌드, 에뮬레이터 앱 실행 스모크 테스트 성공을 확인했습니다.
 
 ## v2.0.0 - 2026-05-22
 

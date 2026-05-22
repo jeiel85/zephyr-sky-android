@@ -1,0 +1,20 @@
+<ko-KR>
+v2.0.1 Android Native 리뉴얼 후속 정리
+
+수정
+• 앱 표시명이 Weather가 아닌 Zephyr Sky로 보이도록 정리
+
+빌드/배포
+• Kotlin/Jetpack Compose Android Native 기준의 Gradle CI와 릴리즈 흐름 정리
+• 리뉴얼 이전 GitHub Issues 백로그 정리
+</ko-KR>
+<en-US>
+v2.0.1 Android Native follow-up
+
+Fixes
+• App label now shows Zephyr Sky instead of Weather
+
+Build and release
+• Gradle CI and release flow aligned for the Kotlin/Jetpack Compose Android Native app
+• Pre-renewal GitHub Issues backlog closed
+</en-US>

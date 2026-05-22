@@ -16,11 +16,11 @@ GitHub Actions는 Gradle Kotlin DSL 기반 Android 빌드를 실행합니다.
 
 ```bash
 git push origin main
-git tag vX.Y.Z
+git tag -a vX.Y.Z -m "vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-태그 푸시 후 GitHub Actions가 릴리즈 APK/AAB를 빌드하고 GitHub Releases에 업로드합니다.
+태그 푸시 후 GitHub Actions가 릴리즈 APK/AAB를 빌드하고 GitHub Releases에 업로드합니다. 태그명과 같은 `docs/releases/vX.Y.Z.md` 파일이 있으면 해당 파일을 GitHub Release 본문으로 사용합니다.
 
 ---
 
@@ -79,11 +79,11 @@ Windows PowerShell에서는 다음과 같이 실행할 수 있습니다.
 현재 앱 내부 버전은 `app/build.gradle.kts`에서 관리합니다.
 
 ```kotlin
-versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 1
-versionName = (findProperty("VERSION_NAME") as String?) ?: "1.0"
+versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 201
+versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.1"
 ```
 
-릴리즈 워크플로우는 태그명에서 `VERSION_NAME`을 계산하고 GitHub Actions 실행 번호를 `VERSION_CODE`로 전달합니다.
+릴리즈 워크플로우는 태그명에서 `VERSION_NAME`을 계산하고 `app/build.gradle.kts`의 `versionName`과 일치하는지 확인합니다. 불일치하면 릴리즈 빌드를 중단합니다.
 
 예:
 
@@ -96,7 +96,20 @@ git push origin v2.0.1
 
 ---
 
-## 5. 산출물 위치
+## 5. 릴리즈 노트
+
+릴리즈 전에 Nightseed Survivor와 같은 방식으로 수기 릴리즈 노트를 작성합니다.
+
+| 파일 | 용도 |
+|------|------|
+| `docs/releases/vX.Y.Z.md` | GitHub Release 본문 |
+| `play_store/release_notes/vX.Y.Z.txt` | Play Console 입력용 다국어 릴리즈 노트 |
+
+`play_store/release_notes/` 파일은 `<ko-KR>`, `<en-US>` 언어 태그를 유지하고, 언어당 500자 이내로 작성합니다.
+
+---
+
+## 6. 산출물 위치
 
 로컬 및 CI 빌드 산출물은 Gradle Android 표준 경로에 생성됩니다.
 
@@ -108,7 +121,7 @@ git push origin v2.0.1
 
 ---
 
-## 6. 현재 배포 상태
+## 7. 현재 배포 상태
 
 - **GitHub Actions**: Android Gradle 기반 CI/Release 워크플로우 사용
 - **GitHub Release**: 태그 푸시로 APK/AAB 자동 업로드
@@ -116,7 +129,7 @@ git push origin v2.0.1
 
 ---
 
-## 7. 유지보수
+## 8. 유지보수
 
 - 배포 또는 CI 변경 후 `HISTORY.md`와 `CHANGELOG.md`를 갱신합니다.
 - 실제로 실행하지 않은 로컬/CI 검증은 성공으로 기록하지 않습니다.
