@@ -9,6 +9,7 @@
 - 태그 릴리즈 워크플로우가 `docs/releases/<tag>.md`를 GitHub Release 본문으로 사용하도록 변경.
 - 앱 내부 기본 버전을 `2.0.1` / `versionCode 201`로 승격하고, 태그명과 `versionName` 불일치 시 릴리즈 빌드를 중단하도록 보완.
 - `CHANGELOG.md`의 Unreleased 항목을 `v2.0.1 - 2026-05-22` 릴리즈 섹션으로 승격.
+- Play Console 업로드용 AAB와 릴리즈 노트 txt를 바탕화면으로 복사하는 `scripts/export-play-store-release.ps1`를 추가.
 
 ### 변경 파일
 - `.github/workflows/release.yml`
@@ -19,13 +20,16 @@
 - `docs/releases/v2.0.1.md`
 - `play_store/release_notes/README.md`
 - `play_store/release_notes/v2.0.1.txt`
+- `scripts/export-play-store-release.ps1`
 - `HISTORY.md`
 
 ### 검증
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
 - 로컬: `app/build/outputs/apk/debug/output-metadata.json`에서 `versionCode 201`, `versionName 2.0.1` 확인.
-- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- 로컬: `scripts/export-play-store-release.ps1` PowerShell 구문 검사 성공.
+- 로컬: release AAB가 없는 상태에서 `scripts/export-play-store-release.ps1 -Version 2.0.1` 실행 시 `Release AAB not found. Build it first: .\gradlew.bat bundleRelease`로 안전하게 중단되는 것 확인.
+- CI: GitHub Actions `Android CI` 런 `26276209625` 성공 확인.
 - 릴리즈: 태그 `v2.0.1` 푸시 후 GitHub Release 및 산출물 확인 예정.
 
 ### 결과

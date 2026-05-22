@@ -107,6 +107,25 @@ git push origin v2.0.1
 
 `play_store/release_notes/` 파일은 `<ko-KR>`, `<en-US>` 언어 태그를 유지하고, 언어당 500자 이내로 작성합니다.
 
+Nightseed Survivor와 같은 방식으로 Play Console 업로드용 파일을 바탕화면에 준비할 수 있습니다.
+
+```powershell
+.\scripts\export-play-store-release.ps1 -Version 2.0.1
+```
+
+이 스크립트는 최신 release AAB와 `play_store/release_notes/vX.Y.Z.txt`를 찾아 다음 이름으로 바탕화면에 복사합니다.
+
+```text
+zephyr-sky-vX.Y.Z.aab
+zephyr-sky-vX.Y.Z-release-notes.txt
+```
+
+release AAB가 아직 없다면 먼저 릴리즈 빌드를 실행해야 합니다.
+
+```powershell
+.\gradlew.bat bundleRelease
+```
+
 ---
 
 ## 6. 산출물 위치
