@@ -1,5 +1,39 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-24] GitHub Pages 랜딩 페이지 및 Play Store 등록 자료 정렬
+
+### 작업
+- `website/index.html`을 Zephyr Sky 브랜드 정체성, 현재 Android 빌드 기능, GitHub 릴리즈, 개인정보 처리방침, Play Store 그래픽 에셋을 보여주는 랜딩 페이지로 개편.
+- 기존 개인정보 처리방침이 GPS 위치 수집 등 현재 빌드와 맞지 않는 내용을 포함해, `website/privacy-policy.html`과 `PRIVACY_POLICY.md`를 도시 검색, Open-Meteo 호출, 선택 알림, 로컬 설정 저장 기준으로 갱신.
+- Play Store 등록용 아이콘, 피처 그래픽, 대표 스크린샷을 `website/assets/`에 복사해 GitHub Pages에서도 바로 표시되도록 구성.
+- `README.md`를 현재 저장소 URL, Pages URL, 권한, 기술 스택, 로컬 실행, Play Store 준비물 기준으로 전면 정리.
+- `play_store/listing/PLAY_CONSOLE_INTAKE.md`의 그래픽 에셋 준비 상태, 개인정보 처리방침 URL, 저장소 경로, v2.0.3 산출물 안내를 최신 상태로 보정.
+- GitHub 저장소 설명, 홈페이지 URL, 토픽을 Zephyr Sky Android 앱 기준으로 갱신 예정.
+
+### 변경 파일
+- `website/index.html`
+- `website/privacy-policy.html`
+- `website/assets/icon_512.png`
+- `website/assets/feature_1024x500.png`
+- `website/assets/screenshot-home.png`
+- `website/assets/screenshot-forecast.png`
+- `README.md`
+- `PRIVACY_POLICY.md`
+- `play_store/listing/PLAY_CONSOLE_INTAKE.md`
+- `CHANGELOG.md`
+- `HISTORY.md`
+
+### 검증
+- 로컬: Play Store 에셋 크기 확인 완료 (`icon_512.png` 512×512, `feature_1024x500.png` 1024×500, 스크린샷 1080×1920).
+- 로컬: `website/`를 `http://127.0.0.1:8123/` 정적 서버로 띄워 랜딩/개인정보 페이지 제목, 이미지 로드, 개인정보 링크, 가로 넘침 없음 확인.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-configuration-cache` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint` 성공.
+- CI: 커밋/푸시 후 GitHub Actions 및 Pages 배포 상태 확인 예정.
+
+### 결과
+- GitHub Pages와 README가 현재 앱의 미니멀 날씨 앱 정체성과 Play Store 등록 준비 상태를 일관되게 보여주도록 정렬함.
+
 ## [2026-05-22] Nightseed Survivor 방식의 새 버전 릴리즈 절차 도입
 
 ### 작업

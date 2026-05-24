@@ -1,5 +1,29 @@
 # CHANGELOG.md
 
+## Unreleased
+
+### Documentation
+- GitHub Pages 랜딩 페이지를 Zephyr Sky 브랜드 정체성, 현재 Android 빌드 기능, Play Store 준비 에셋을 보여주는 구조로 개편했습니다.
+- README를 현재 v2.0.3 코드 기준의 권한, 데이터 처리, 기술 스택, GitHub Pages/Play Store 안내로 정리했습니다.
+- 개인정보 처리방침 웹/마크다운 문서를 현재 빌드의 도시 검색, Open-Meteo 연동, 선택 알림, 로컬 설정 저장 기준으로 갱신했습니다.
+
+### Build / CI
+- GitHub Pages 배포용 `website/assets/`에 Play Store 아이콘, 피처 그래픽, 대표 스크린샷을 포함했습니다.
+
+## v2.0.3 - 2026-05-23
+
+### Added
+- 실 날씨 데이터 연동: Open-Meteo Forecast / Geocoding / Air Quality API를 사용해 mock 데이터를 모두 실 응답으로 대체했습니다. API 키는 필요하지 않습니다.
+- WMO 날씨코드(0~99)를 기존 conditionId 체계(Clear/Clouds/Rain/Snow/Thunderstorm/Atmosphere)로 매핑하는 헬퍼를 추가했습니다.
+- `INTERNET`, `ACCESS_NETWORK_STATE` 권한을 매니페스트에 선언했습니다.
+
+### Changed
+- `WeatherRepository`의 `getCurrentWeather`/`getForecast`/`getFineDust`가 실제 네트워크 호출 기반으로 동작합니다. 도시명은 Open-Meteo Geocoding으로 위경도를 조회해 풀어냅니다.
+- `versionCode 202 → 203`, `versionName "2.0.2" → "2.0.3"`로 bump 했습니다.
+
+### Verification
+- `./gradlew bundleRelease`를 키스토어 환경변수와 함께 실행하여 v2.0.3 서명 AAB 산출을 확인했습니다.
+
 ## v2.0.2 - 2026-05-22
 
 ### Fixed

@@ -14,8 +14,8 @@ android {
     applicationId = "com.jeiel.zephyr_sky"
     minSdk = 24
     targetSdk = 36
-    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 202
-    versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.2"
+    versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 203
+    versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.3"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

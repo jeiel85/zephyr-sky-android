@@ -1,0 +1,26 @@
+<ko-KR>
+v2.0.3 실 날씨 API 연동
+
+추가
+• Open-Meteo 무료 API로 현재 날씨, 시간별 예보, 대기질을 실제 데이터로 표시 (API 키 불필요)
+• 도시명 검색 시 Open-Meteo Geocoding으로 위경도를 조회하고 결과를 캐싱
+• 인터넷 통신 권한(INTERNET, ACCESS_NETWORK_STATE) 추가
+
+변경
+• 기존 하드코딩 mock 데이터 제거
+• 일출/일몰 시간을 실 응답 기준으로 갱신
+• WMO 날씨코드를 앱 내부 상태(맑음/흐림/비/눈/뇌우)로 매핑
+</ko-KR>
+<en-US>
+v2.0.3 Live weather API integration
+
+Added
+• Real weather, hourly forecast, and air-quality powered by the free Open-Meteo API (no API key required)
+• City lookup via Open-Meteo Geocoding for latitude/longitude resolution
+• INTERNET and ACCESS_NETWORK_STATE permissions
+
+Changed
+• Removed hard-coded mock data
+• Sunrise/sunset times now come from live API responses
+• WMO weather codes mapped to the in-app conditions (clear/cloudy/rain/snow/thunder)
+</en-US>
