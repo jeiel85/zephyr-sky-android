@@ -4,22 +4,25 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     
-    <!-- Warm Golden Sun Behind Cloud -->
+    <!-- Warm Cream Crescent Moon (Right-Top Accent) -->
     <path
-        android:fillColor="#FFD54F"
-        android:pathData="M56,40m-15,0a15,15 0 1,1 30,0a15,15 0 1,1 -30,0" />
-    
-    <!-- Sun Ray Accents for Modern Polish -->
+        android:fillColor="#FFF0D2"
+        android:pathData="M70,16 A12,12 0 1,0 86,32 A12,12 0 0,1 70,16 Z" />
+        
+    <!-- Scattered Tiny Stars (Ambient Night Sky Polish) -->
     <path
-        android:fillColor="#FFE082"
-        android:pathData="M56,18 L56,22 M56,58 L56,62 M34,40 L38,40 M74,40 L78,40"
-        android:strokeWidth="3.5"
-        android:strokeColor="#FFD54F"
-        android:strokeLineCap="round"/>
+        android:fillColor="#FFF5E6"
+        android:pathData="M24,22m-2.5,0a2.5,2.5 0 1,1 5,0a2.5,2.5 0 1,1 -5,0" />
+    <path
+        android:fillColor="#FFF5E6"
+        android:pathData="M84,68m-2,0a2,2 0 1,1 4,0a2,2 0 1,1 -4,0" />
+    <path
+        android:fillColor="#FFF5E6"
+        android:pathData="M80,22m-1.5,0a1.5,1.5 0 1,1 3,0a1.5,1.5 0 1,1 -3,0" />
 
-    <!-- Precise Minimalist White Cloud Compound Path -->
+    <!-- Modern Bold Golden "Z" Brand Mark -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M 36 68 L 70 68 A 12 12 0 0 0 70 44 A 12 12 0 0 0 62 47 A 15 15 0 0 0 35 48 A 11 11 0 0 0 36 68 Z" />
+        android:fillColor="#FFD68A"
+        android:pathData="M36,32 L72,32 L72,42 L48,72 L72,72 L72,82 L36,82 L36,72 L60,42 L36,42 Z" />
 
 </vector>

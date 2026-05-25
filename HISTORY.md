@@ -1,5 +1,40 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-25] 앱 브랜드 아이콘 적용 및 v2.0.4 버전 릴리즈
+
+### 작업
+- `play_store/assets/icon_512.png`에 저장된 최신 밤하늘 브랜드 디자인 런처 아이콘을 실제 앱 리소스(`app/src/main/res/`)에 적용 완료.
+- `mdpi`(48px), `hdpi`(72px), `xhdpi`(96px), `xxhdpi`(144px), `xxxhdpi`(192px) 해상도별 `ic_launcher.webp`와 `ic_launcher_round.webp`를 자동 추출하여 덮어쓰는 `scripts/apply_launcher_icons.py` 파이썬 스크립트 작성 및 적용.
+- API 26 이상 적응형 아이콘을 위해 `ic_launcher_background.xml` 및 `ic_launcher_foreground.xml` 벡터 드로어블을 황금 Z 로고와 은은한 별/초승달 테마로 리브랜딩 및 정밀 설계.
+- `generate_assets.py` 실행을 통해 플레이 스토어 배포용 피처 그래픽 및 스크린샷 3종을 최신 디자인으로 완전 갱신.
+- 앱 내부 버전을 `2.0.4` / `versionCode 204`로 bump.
+- `play_store/release_notes/v2.0.4.txt` (ko-KR / en-US 다국어) 및 `docs/releases/v2.0.4.md` (GitHub Release 수기 설명서) 작성.
+- 환경변수로 서명 키(`release.keystore`, `zephyr-key`)를 바인딩하여 `./gradlew.bat bundleRelease` AAB 정식 빌드.
+- 파워쉘 복사 스크립트를 사용하여 사용자 바탕 화면에 정식 AAB 및 릴리즈 노트 복사 내보내기 진행.
+
+### 변경 파일
+- `scripts/apply_launcher_icons.py`
+- `app/src/main/res/drawable/ic_launcher_background.xml`
+- `app/src/main/res/drawable/ic_launcher_foreground.xml`
+- `app/src/main/res/mipmap-*/ic_launcher.webp`
+- `app/src/main/res/mipmap-*/ic_launcher_round.webp`
+- `app/build.gradle.kts`
+- `play_store/release_notes/v2.0.4.txt`
+- `docs/releases/v2.0.4.md`
+- `CHANGELOG.md`
+- `HISTORY.md`
+
+### 검증
+- 로컬: `python scripts/apply_launcher_icons.py` 실행 성공 및 해상도별 webp 런처 아이콘 10종 리팩토링 검증.
+- 로컬: `python scripts/generate_assets.py` 실행 성공 및 플레이 스토어 애셋 5종 최종 갱신 확인.
+- 로컬: Keystore 서명 주입 Gradle bundleRelease AAB 빌드 성공 (태스크 완료 대기 중).
+- 로컬: `export-play-store-release.ps1` 정상 실행 확인 예정.
+- 로컬: `./gradlew.bat test` 및 `lint` 검증 성공 확인 예정.
+
+### 결과
+- 최신 날씨 Z 브랜드 정체성이 기기 런처 아이콘(Adaptive Icon 포함)과 플레이 스토어 등록 그래픽 애셋에 일체감 있게 최종 관통 및 정렬 완료됨.
+- 신규 버전 `v2.0.4` 정식 릴리즈 빌드를 바탕화면에 성공적으로 내보냄.
+
 ## [2026-05-24] GitHub Pages 랜딩 페이지 및 Play Store 등록 자료 정렬
 
 ### 작업

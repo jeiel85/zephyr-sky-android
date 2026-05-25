@@ -10,6 +10,17 @@
 ### Build / CI
 - GitHub Pages 배포용 `website/assets/`에 Play Store 아이콘, 피처 그래픽, 대표 스크린샷을 포함했습니다.
 
+## v2.0.4 - 2026-05-25
+
+### Added
+- **브랜드 아이콘의 실제 앱 이식**: `play_store/assets/icon_512.png`에 저장된 최신 밤하늘 & 황금빛 Z 브랜드 디자인의 런처 아이콘을 실제 앱 리소스(`mipmap-*`)로 LANCZOS 방식을 통해 자동 리사이징 적용 및 이식했습니다.
+- **적응형 아이콘(Adaptive Icon) 현대화**: API 26 이상 기기를 위하여 `ic_launcher_background.xml`과 `ic_launcher_foreground.xml`을 어두운 밤하늘 딥네이비 테마 및 입체적인 링 형상, 황금 Z 기호 및 은은한 초승달/별빛 벡터 패스로 리디자인했습니다.
+- **아이콘 변환 자동화 유틸리티**: 512px 원본에서 Android mipmap 크기별 webp 아이콘을 추출해주는 `scripts/apply_launcher_icons.py` 파이썬 자동화 스크립트를 추가했습니다.
+
+### Changed
+- `versionCode 203 → 204`, `versionName "2.0.3" → "2.0.4"`로 bump 했습니다.
+- `scripts/generate_assets.py` 실행을 통해 플레이스토어 등록용 피처 그래픽 및 스크린샷 3종을 최신 브랜드 정체성과 일치하도록 완전 갱신했습니다.
+
 ## v2.0.3 - 2026-05-23
 
 ### Added

@@ -1,0 +1,16 @@
+<ko-KR>
+v2.0.4 브랜드 아이콘 실 적용 및 스토어 그래픽 최적화
+
+추가
+• 밤하늘 별빛과 황금빛 Z 정체성을 지닌 브랜드 런처 아이콘을 실제 앱 리소스에 완벽 적용
+• 최신 단말을 위해 Adaptive Icon(적응형 아이콘)을 다크네이비 밤하늘 배경 및 황금 Z 패스로 리브랜딩
+• 플레이 스토어 등록용 피처 그래픽 및 스크린샷 에셋들을 최신 테마에 맞추어 일관되게 최신화
+</ko-KR>
+<en-US>
+v2.0.4 Brand Icon Application & Store Graphics Optimization
+
+Added
+• Applied the new dark night & golden 'Z' brand launcher icons to live app resources
+• Redesigned Adaptive Icons with a deep navy starry-night background and custom golden 'Z' paths for modern devices
+• Updated Play Store feature graphics and screenshot assets to align seamlessly with the new brand identity
+</en-US>
