@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v2.0.5 - 2026-05-26
+
 ### Added
 - 추천 도시 칩을 제거하고, 사용자가 직접 권한을 허용했을 때 현재 위치 기반으로 날씨를 선택하는 버튼을 추가했습니다.
 - 현재 위치 선택 시 마지막 위치 좌표를 기기 내부에 저장해 다음 실행과 새로고침에서 같은 위치 기준으로 조회하도록 했습니다.
@@ -21,6 +23,7 @@
 - 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug` 성공.
 
 ### Build / CI
+- `versionCode 204 → 205`, `versionName "2.0.4" → "2.0.5"`로 bump 했습니다.
 - GitHub Pages 배포용 `website/assets/`에 Play Store 아이콘, 피처 그래픽, 대표 스크린샷을 포함했습니다.
 
 ## v2.0.4 - 2026-05-25

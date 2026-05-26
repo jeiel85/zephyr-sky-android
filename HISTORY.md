@@ -9,6 +9,9 @@
 - Android 플랫폼 `LocationManager`와 `Geocoder`를 사용해 새 외부 의존성 없이 현재 위치 좌표와 표시명을 가져오도록 `DeviceLocationResolver`를 추가.
 - 현재 위치 선택 시 마지막 도시 대신 위치 좌표를 SharedPreferences에 저장하고, 새로고침/앱 재실행 시 같은 좌표 기준으로 날씨를 다시 조회하도록 `WeatherViewModel`을 보완.
 - 위치 권한 추가에 맞춰 `README.md`, `PRIVACY_POLICY.md`, `website/index.html`, `website/privacy-policy.html`, `CHANGELOG.md`를 갱신.
+- 앱 내부 버전을 `2.0.5` / `versionCode 205`로 bump.
+- `docs/releases/v2.0.5.md` 및 `play_store/release_notes/v2.0.5.txt` 릴리즈 노트 작성.
+- `v2.0.5` 태그 푸시를 통한 GitHub Release 생성 예정.
 
 ### 변경 파일
 - `app/src/main/AndroidManifest.xml`
@@ -23,16 +26,22 @@
 - `website/privacy-policy.html`
 - `CHANGELOG.md`
 - `HISTORY.md`
+- `app/build.gradle.kts`
+- `docs/releases/v2.0.5.md`
+- `play_store/release_notes/v2.0.5.txt`
 
 ### 검증
 - 로컬: Open-Meteo Geocoding API 직접 호출로 `name=서울` 결과 없음, `name=Seoul` 정상 결과 반환 확인.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint` 성공.
 - 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug` 성공.
-- CI: 커밋/푸시 후 GitHub Actions 결과 확인 예정.
+- CI: 기능 개선 커밋 푸시 후 Android CI 런 `26442546311` 성공.
+- CI: 기능 개선 커밋 푸시 후 Pages 배포 런 `26442546357` 성공.
+- 릴리즈: `v2.0.5` 태그 푸시 후 Android Build & Release 결과 확인 예정.
 
 ### 결과
 - 서울 버튼/한글 도시명 검색이 실패하던 원인을 보정했고, 추천 도시 대신 사용자가 명시적으로 선택하는 위치 기반 조회 흐름으로 정리함.
+- 신규 버전 `v2.0.5` 릴리즈 준비 파일을 정렬함.
 
 ## [2026-05-25] 앱 브랜드 아이콘 적용 및 v2.0.4 버전 릴리즈
 

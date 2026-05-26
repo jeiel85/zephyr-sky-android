@@ -1,0 +1,30 @@
+<ko-KR>
+v2.0.5 도시 검색 보정 및 위치 기반 선택 개선
+
+수정
+• 서울 등 주요 한국 도시 검색어가 Open-Meteo에서 정상 조회되도록 보정
+• 추천 도시 버튼을 제거하고 사용자가 직접 선택하는 현재 위치 기반 조회 버튼으로 개선
+
+추가
+• 현재 위치 선택 시 대략적인 위치 권한을 요청하고 해당 위치의 날씨, 시간별 예보, 대기질 표시
+• 마지막으로 선택한 위치를 기기 내부에 저장해 다음 실행과 새로고침에서 유지
+
+개인정보
+• 위치 권한은 선택 사항이며, 현재 위치 버튼을 누를 때만 요청
+• 위치 좌표는 날씨 조회와 마지막 선택 복원 용도로만 사용
+</ko-KR>
+<en-US>
+v2.0.5 City Search Fixes & Location-Based Selection
+
+Fixed
+• Improved Korean city search so names like Seoul resolve correctly through Open-Meteo
+• Removed recommended city shortcuts and replaced them with an explicit current-location action
+
+Added
+• Optional approximate location permission for current-location weather, forecast, and air-quality lookup
+• Last selected location is saved locally for refresh and next app launch
+
+Privacy
+• Location permission is optional and requested only when using the current-location button
+• Coordinates are used only for weather lookup and restoring the last selected location
+</en-US>
