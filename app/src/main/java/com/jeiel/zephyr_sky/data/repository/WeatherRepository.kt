@@ -62,9 +62,30 @@ class WeatherRepository(
 
     suspend fun getCurrentWeather(cityName: String): CurrentWeatherResponse = withContext(Dispatchers.IO) {
         val place = resolvePlace(cityName)
+        getCurrentWeatherForPlace(place)
+    }
+
+    suspend fun getCurrentWeather(
+        latitude: Double,
+        longitude: Double,
+        displayName: String,
+        countryCode: String? = null
+    ): CurrentWeatherResponse = withContext(Dispatchers.IO) {
+        getCurrentWeatherForPlace(
+            WeatherPlace(
+                name = displayName.ifBlank { "현재 위치" },
+                latitude = latitude,
+                longitude = longitude,
+                country = countryCode.orEmpty(),
+                countryCode = countryCode
+            )
+        )
+    }
+
+    private suspend fun getCurrentWeatherForPlace(place: WeatherPlace): CurrentWeatherResponse {
         val resp = forecast.forecast(latitude = place.latitude, longitude = place.longitude)
         val cur = resp.current
-            ?: throw IllegalStateException("Open-Meteo 응답에 'current'가 없습니다: $cityName")
+            ?: throw IllegalStateException("Open-Meteo 응답에 'current'가 없습니다: ${place.name}")
         val tz = resolveTimeZone(resp.timezone)
 
         val conditionId = wmoToConditionId(cur.weatherCode)
@@ -76,7 +97,7 @@ class WeatherRepository(
         val sunsetEpoch = parseLocalDateTimeToEpoch(resp.daily?.sunset?.firstOrNull(), tz)
             ?: epochAtLocalTime(firstDailyDate, 18, 0, tz)
 
-        CurrentWeatherResponse(
+        return CurrentWeatherResponse(
             name = place.name,
             weather = listOf(
                 WeatherDescription(
@@ -107,6 +128,20 @@ class WeatherRepository(
 
     suspend fun getFineDust(cityName: String): FineDustInfo = withContext(Dispatchers.IO) {
         val place = resolvePlace(cityName)
+        getFineDustForPlace(place)
+    }
+
+    suspend fun getFineDust(latitude: Double, longitude: Double): FineDustInfo = withContext(Dispatchers.IO) {
+        getFineDustForPlace(
+            WeatherPlace(
+                name = "현재 위치",
+                latitude = latitude,
+                longitude = longitude
+            )
+        )
+    }
+
+    private suspend fun getFineDustForPlace(place: WeatherPlace): FineDustInfo {
         val resp = airQuality.current(latitude = place.latitude, longitude = place.longitude)
         val cur = resp.current
         val pm10 = cur?.pm10?.toInt() ?: 0
@@ -136,7 +171,7 @@ class WeatherRepository(
             )
         }
 
-        FineDustInfo(
+        return FineDustInfo(
             pm10 = pm10,
             pm25 = pm25,
             grade = grade,
@@ -147,9 +182,30 @@ class WeatherRepository(
 
     suspend fun getForecast(cityName: String): ForecastResponse = withContext(Dispatchers.IO) {
         val place = resolvePlace(cityName)
+        getForecastForPlace(place)
+    }
+
+    suspend fun getForecast(
+        latitude: Double,
+        longitude: Double,
+        displayName: String,
+        countryCode: String? = null
+    ): ForecastResponse = withContext(Dispatchers.IO) {
+        getForecastForPlace(
+            WeatherPlace(
+                name = displayName.ifBlank { "현재 위치" },
+                latitude = latitude,
+                longitude = longitude,
+                country = countryCode.orEmpty(),
+                countryCode = countryCode
+            )
+        )
+    }
+
+    private suspend fun getForecastForPlace(place: WeatherPlace): ForecastResponse {
         val resp = forecast.forecast(latitude = place.latitude, longitude = place.longitude)
         val hourly = resp.hourly
-            ?: throw IllegalStateException("Open-Meteo 응답에 'hourly'가 없습니다: $cityName")
+            ?: throw IllegalStateException("Open-Meteo 응답에 'hourly'가 없습니다: ${place.name}")
         val tz = resolveTimeZone(resp.timezone)
 
         val nowEpoch = nowEpochSeconds()
@@ -204,7 +260,7 @@ class WeatherRepository(
             )
         }
 
-        ForecastResponse(
+        return ForecastResponse(
             list = items,
             city = CityInfo(
                 name = place.name,
@@ -215,10 +271,18 @@ class WeatherRepository(
 
     // --- helpers ---
 
-    private suspend fun resolvePlace(cityName: String): GeocodingResult {
-        val response = geocoding.search(name = cityName)
-        return response.results?.firstOrNull()
+    private suspend fun resolvePlace(cityName: String): WeatherPlace {
+        val trimmed = cityName.trim()
+        val normalized = normalizeCitySearchQuery(trimmed)
+        val response = geocoding.search(name = normalized)
+        val result = response.results?.firstOrNull()
+            ?: if (normalized != trimmed) {
+                geocoding.search(name = trimmed).results?.firstOrNull()
+            } else {
+                null
+            }
             ?: throw IllegalArgumentException("도시를 찾을 수 없습니다: $cityName")
+        return result.toWeatherPlace()
     }
 
     private fun <T> buildApi(baseUrl: String, clazz: Class<T>): T {
@@ -278,6 +342,55 @@ class WeatherRepository(
 
     private fun nowEpochSeconds(): Long = System.currentTimeMillis() / 1000
 }
+
+private data class WeatherPlace(
+    val name: String,
+    val latitude: Double,
+    val longitude: Double,
+    val country: String? = null,
+    val countryCode: String? = null
+)
+
+private fun GeocodingResult.toWeatherPlace(): WeatherPlace {
+    return WeatherPlace(
+        name = name,
+        latitude = latitude,
+        longitude = longitude,
+        country = country,
+        countryCode = countryCode
+    )
+}
+
+internal fun normalizeCitySearchQuery(query: String): String {
+    val compact = query.trim()
+    return koreanCityAliases[compact] ?: compact
+}
+
+private val koreanCityAliases = mapOf(
+    "서울" to "Seoul",
+    "서울시" to "Seoul",
+    "서울특별시" to "Seoul",
+    "부산" to "Busan",
+    "부산시" to "Busan",
+    "부산광역시" to "Busan",
+    "제주" to "Jeju",
+    "제주시" to "Jeju",
+    "제주도" to "Jeju",
+    "인천" to "Incheon",
+    "인천광역시" to "Incheon",
+    "대구" to "Daegu",
+    "대구광역시" to "Daegu",
+    "대전" to "Daejeon",
+    "대전광역시" to "Daejeon",
+    "광주" to "Gwangju",
+    "광주광역시" to "Gwangju",
+    "울산" to "Ulsan",
+    "울산광역시" to "Ulsan",
+    "세종" to "Sejong",
+    "세종시" to "Sejong",
+    "수원" to "Suwon",
+    "수원시" to "Suwon"
+)
 
 // --- WMO weather-code mapping (keeps existing UI conditionId semantics) ---
 

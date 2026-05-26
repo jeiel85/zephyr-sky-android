@@ -2,10 +2,23 @@
 
 ## Unreleased
 
+### Added
+- 추천 도시 칩을 제거하고, 사용자가 직접 권한을 허용했을 때 현재 위치 기반으로 날씨를 선택하는 버튼을 추가했습니다.
+- 현재 위치 선택 시 마지막 위치 좌표를 기기 내부에 저장해 다음 실행과 새로고침에서 같은 위치 기준으로 조회하도록 했습니다.
+
+### Fixed
+- Open-Meteo Geocoding API가 `서울` 같은 한글 도시 검색어를 직접 찾지 못하는 문제를 보정하기 위해 주요 한국 도시명을 영문 검색어로 정규화했습니다.
+
 ### Documentation
 - GitHub Pages 랜딩 페이지를 Zephyr Sky 브랜드 정체성, 현재 Android 빌드 기능, Play Store 준비 에셋을 보여주는 구조로 개편했습니다.
 - README를 현재 v2.0.3 코드 기준의 권한, 데이터 처리, 기술 스택, GitHub Pages/Play Store 안내로 정리했습니다.
 - 개인정보 처리방침 웹/마크다운 문서를 현재 빌드의 도시 검색, Open-Meteo 연동, 선택 알림, 로컬 설정 저장 기준으로 갱신했습니다.
+- README, GitHub Pages, 개인정보 처리방침을 선택형 위치 권한과 현재 위치 기반 조회 동작에 맞춰 갱신했습니다.
+
+### Verification
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test` 성공.
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint` 성공.
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug` 성공.
 
 ### Build / CI
 - GitHub Pages 배포용 `website/assets/`에 Play Store 아이콘, 피처 그래픽, 대표 스크린샷을 포함했습니다.

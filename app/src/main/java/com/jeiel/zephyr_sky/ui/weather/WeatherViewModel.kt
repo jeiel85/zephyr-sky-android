@@ -44,6 +44,8 @@ class WeatherViewModel(
     private val _currentCity = MutableStateFlow("서울")
     val currentCity: StateFlow<String> = _currentCity.asStateFlow()
 
+    private var currentCoordinates: SelectedCoordinates? = null
+
     private val _tempNotificationEnabled = MutableStateFlow(true)
     val tempNotificationEnabled: StateFlow<Boolean> = _tempNotificationEnabled.asStateFlow()
 
@@ -53,8 +55,6 @@ class WeatherViewModel(
     private val _darkThemeSetting = MutableStateFlow(DarkThemeSetting.SYSTEM)
     val darkThemeSetting: StateFlow<DarkThemeSetting> = _darkThemeSetting.asStateFlow()
 
-    val suggestions = listOf("서울", "부산", "제주", "Tokyo", "New York")
-
     init {
         fetchWeather(_currentCity.value)
     }
@@ -63,6 +63,8 @@ class WeatherViewModel(
         val prefs = context.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
         
         val lastCity = prefs.getString("pref_key_last_city", "서울") ?: "서울"
+        val lastLatitude = prefs.getString("pref_key_last_latitude", null)?.toDoubleOrNull()
+        val lastLongitude = prefs.getString("pref_key_last_longitude", null)?.toDoubleOrNull()
         val themeName = prefs.getString("pref_key_dark_theme", DarkThemeSetting.SYSTEM.name) ?: DarkThemeSetting.SYSTEM.name
         
         _darkThemeSetting.value = try {
@@ -75,7 +77,12 @@ class WeatherViewModel(
         _tempNotificationEnabled.value = prefs.getBoolean("pref_key_temp_notification_enabled", true)
         _autoAlertsEnabled.value = prefs.getBoolean("pref_key_auto_alerts_enabled", true)
         
-        if (lastCity != _currentCity.value) {
+        if (lastLatitude != null && lastLongitude != null) {
+            currentCoordinates = SelectedCoordinates(lastLatitude, lastLongitude)
+            _currentCity.value = lastCity
+            fetchWeather(lastLatitude, lastLongitude, lastCity)
+        } else if (lastCity != _currentCity.value) {
+            currentCoordinates = null
             _currentCity.value = lastCity
             fetchWeather(lastCity)
         }
@@ -104,27 +111,66 @@ class WeatherViewModel(
     fun searchCity(context: Context? = null) {
         val city = _searchQuery.value.trim()
         if (city.isNotEmpty()) {
+            currentCoordinates = null
             _currentCity.value = city
-            context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
-                ?.edit()
-                ?.putString("pref_key_last_city", city)
-                ?.apply()
+            saveCityPreference(context, city)
             fetchWeather(city)
         }
     }
 
-    fun selectSuggestedCity(city: String, context: Context? = null) {
-        _currentCity.value = city
-        _searchQuery.value = ""
+    fun selectCurrentLocation(context: Context) {
+        viewModelScope.launch {
+            _uiState.value = WeatherUiState.Loading
+            try {
+                val selection = DeviceLocationResolver.resolve(context.applicationContext)
+                currentCoordinates = SelectedCoordinates(selection.latitude, selection.longitude)
+                _currentCity.value = selection.displayName
+                _searchQuery.value = ""
+                saveLocationPreference(
+                    context = context,
+                    displayName = selection.displayName,
+                    latitude = selection.latitude,
+                    longitude = selection.longitude
+                )
+                fetchWeather(selection.latitude, selection.longitude, selection.displayName)
+            } catch (e: Exception) {
+                _uiState.value = WeatherUiState.Error(
+                    e.localizedMessage ?: "현재 위치를 확인할 수 없습니다."
+                )
+            }
+        }
+    }
+
+    private fun saveCityPreference(context: Context?, city: String) {
         context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
             ?.edit()
             ?.putString("pref_key_last_city", city)
+            ?.remove("pref_key_last_latitude")
+            ?.remove("pref_key_last_longitude")
             ?.apply()
-        fetchWeather(city)
+    }
+
+    private fun saveLocationPreference(
+        context: Context?,
+        displayName: String,
+        latitude: Double,
+        longitude: Double
+    ) {
+        context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+            ?.edit()
+            ?.putString("pref_key_last_city", displayName)
+            ?.putString("pref_key_last_latitude", latitude.toString())
+            ?.putString("pref_key_last_longitude", longitude.toString())
+            ?.apply()
     }
 
     fun refresh() {
-        fetchWeather(_currentCity.value)
+        val coordinates = currentCoordinates
+        if (coordinates != null) {
+            fetchWeather(coordinates.latitude, coordinates.longitude, _currentCity.value)
+        } else {
+            fetchWeather(_currentCity.value)
+        }
     }
 
     fun setTempNotificationEnabled(enabled: Boolean, context: Context, state: WeatherUiState.Success?) {
@@ -207,4 +253,32 @@ class WeatherViewModel(
             }
         }
     }
+
+    private fun fetchWeather(latitude: Double, longitude: Double, displayName: String) {
+        viewModelScope.launch {
+            _uiState.value = WeatherUiState.Loading
+            try {
+                val currentWeather = repository.getCurrentWeather(latitude, longitude, displayName)
+                val forecast = repository.getForecast(latitude, longitude, displayName)
+                val fineDust = repository.getFineDust(latitude, longitude)
+                val isConfigured = repository.isApiKeyConfigured()
+
+                _uiState.value = WeatherUiState.Success(
+                    currentWeather = currentWeather,
+                    forecast = forecast,
+                    fineDust = fineDust,
+                    isApiKeyConfigured = isConfigured
+                )
+            } catch (e: Exception) {
+                _uiState.value = WeatherUiState.Error(
+                    e.localizedMessage ?: "현재 위치의 날씨 정보 수집 중 에러가 발생했습니다."
+                )
+            }
+        }
+    }
 }
+
+private data class SelectedCoordinates(
+    val latitude: Double,
+    val longitude: Double
+)

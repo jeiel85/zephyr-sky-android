@@ -1,10 +1,11 @@
 package com.jeiel.zephyr_sky.ui.weather
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.jeiel.zephyr_sky.data.api.CurrentWeatherResponse
 import com.jeiel.zephyr_sky.data.api.ForecastItem
 import com.jeiel.zephyr_sky.data.api.ForecastResponse
@@ -72,7 +74,6 @@ fun WeatherScreen(
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val isFahrenheit by viewModel.isFahrenheit.collectAsState()
-    val currentCity by viewModel.currentCity.collectAsState()
 
     val darkThemeSetting by viewModel.darkThemeSetting.collectAsState()
     val isSystemDark = androidx.compose.foundation.isSystemInDarkTheme()
@@ -87,24 +88,37 @@ fun WeatherScreen(
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                androidx.core.content.ContextCompat.checkSelfPermission(
-                    context, android.Manifest.permission.POST_NOTIFICATIONS
-                ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else {
                 true
             }
         )
     }
 
-    val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+    var hasLocationPermission by remember {
+        mutableStateOf(DeviceLocationResolver.hasLocationPermission(context))
+    }
+
+    val notificationPermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
         contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasNotificationPermission = isGranted
     }
 
+    val locationPermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) { grants ->
+        hasLocationPermission = grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (hasLocationPermission) {
+            viewModel.selectCurrentLocation(context)
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
-            permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
         WeatherNotificationHelper.createNotificationChannels(context)
     }
@@ -257,45 +271,40 @@ fun WeatherScreen(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Scrollable Quick Suggestions
-                Row(
+                FilledTonalButton(
+                    onClick = {
+                        if (DeviceLocationResolver.hasLocationPermission(context)) {
+                            hasLocationPermission = true
+                            viewModel.selectCurrentLocation(context)
+                        } else {
+                            locationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION))
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.Center
+                        .heightIn(min = 48.dp)
+                        .testTag("current_location_button"),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = if (isDarkTheme) Color(0xFF1E2025) else Color(0xFFF1F0F7),
+                        contentColor = if (isDarkTheme) Color(0xFFD3E4FF) else Color(0xFF001C38)
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        (if (isDarkTheme) Color(0xFFBAC3D4) else Color(0xFF435E91)).copy(alpha = 0.28f)
+                    )
                 ) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(viewModel.suggestions) { city ->
-                            val isSelected = city == currentCity
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(32.dp))
-                                    .background(
-                                        if (isSelected) {
-                                            if (isDarkTheme) Color(0xFF3B485A) else Color(0xFFD3E4FF)
-                                        } else {
-                                            if (isDarkTheme) Color(0xFF1E2025) else Color(0xFFF1F0F7)
-                                        }
-                                    )
-                                    .clickable { viewModel.selectSuggestedCity(city, context) }
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .testTag("suggestion_pill_$city")
-                            ) {
-                                Text(
-                                    text = city,
-                                    fontSize = 13.sp,
-                                    color = if (isSelected) {
-                                        if (isDarkTheme) Color(0xFFD3E4FF) else Color(0xFF001C38)
-                                    } else {
-                                        if (isDarkTheme) Color(0xFFBAC3D4) else Color(0xFF435E91)
-                                    },
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                                )
-                            }
-                        }
-                    }
+                    Icon(
+                        imageVector = Icons.Default.MyLocation,
+                        contentDescription = "Use current location",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = if (hasLocationPermission) "현재 위치 날씨 보기" else "위치 기반으로 선택",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

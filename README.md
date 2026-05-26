@@ -4,7 +4,7 @@
   <img src="website/assets/feature_1024x500.png" alt="Zephyr Sky feature graphic" width="900">
 </p>
 
-**Zephyr Sky**는 도시명 검색만으로 실시간 날씨, 시간별 예보, 대기질 정보를 정제된 그라데이션 UI에 담아 보여주는 Android 날씨 앱입니다. Kotlin, Jetpack Compose, Material 3 기반으로 작성되었고, Open-Meteo의 무료 API를 사용합니다.
+**Zephyr Sky**는 도시명 검색 또는 선택형 현재 위치로 실시간 날씨, 시간별 예보, 대기질 정보를 정제된 그라데이션 UI에 담아 보여주는 Android 날씨 앱입니다. Kotlin, Jetpack Compose, Material 3 기반으로 작성되었고, Open-Meteo의 무료 API를 사용합니다.
 
 공개 페이지: <https://jeiel85.github.io/zephyr-sky-android/>
 개인정보 처리방침: <https://jeiel85.github.io/zephyr-sky-android/privacy-policy.html>
@@ -16,7 +16,7 @@ Zephyr Sky는 과도한 정보와 광고를 걷어낸 **미니멀 날씨 도구*
 
 ## 주요 기능
 
-- 도시명 검색 기반 현재 날씨 조회
+- 도시명 검색 및 선택형 현재 위치 기반 현재 날씨 조회
 - Open-Meteo Forecast / Geocoding / Air Quality API 연동
 - 현재 기온, 체감 온도, 습도, 바람, 구름량, 일출/일몰 표시
 - 3시간 간격 시간별 예보 카드
@@ -24,19 +24,20 @@ Zephyr Sky는 과도한 정보와 광고를 걷어낸 **미니멀 날씨 도구*
 - 섭씨/화씨 전환
 - 라이트, 다크, 시스템 자동 테마
 - 선택형 현재 기온 알림과 날씨 경보 알림
-- 마지막 도시와 앱 설정의 로컬 저장
+- 마지막 도시 또는 현재 위치 좌표와 앱 설정의 로컬 저장
 
 ## 개인정보와 권한
 
-현재 빌드는 GPS 위치 권한, 카메라, 연락처, 마이크, 광고 ID를 사용하지 않습니다.
+현재 빌드는 사용자가 직접 누를 때만 대략적인 위치 권한을 요청합니다. 카메라, 연락처, 마이크, 광고 ID는 사용하지 않습니다.
 
 앱 권한:
 
 - `INTERNET`: Open-Meteo API 조회
 - `ACCESS_NETWORK_STATE`: 네트워크 상태 확인
+- `ACCESS_COARSE_LOCATION`: 사용자가 선택한 경우 현재 위치 기반 날씨 조회
 - `POST_NOTIFICATIONS`: 선택형 날씨 알림 표시
 
-사용자가 입력한 도시명은 날씨 조회를 위해 Open-Meteo Geocoding API로 전송됩니다. 마지막 도시, 테마, 단위, 알림 설정은 기기 내부 SharedPreferences에 저장됩니다.
+사용자가 입력한 도시명은 날씨 조회를 위해 Open-Meteo Geocoding API로 전송됩니다. 현재 위치 선택 시 기기에서 확인한 대략적인 좌표를 Open-Meteo Forecast / Air Quality API 조회에 사용합니다. 마지막 도시 또는 위치 좌표, 테마, 단위, 알림 설정은 기기 내부 SharedPreferences에 저장됩니다.
 
 ## 기술 스택
 
