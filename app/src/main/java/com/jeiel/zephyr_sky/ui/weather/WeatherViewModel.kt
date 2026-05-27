@@ -1,6 +1,7 @@
 package com.jeiel.zephyr_sky.ui.weather
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jeiel.zephyr_sky.data.api.CurrentWeatherResponse
@@ -26,6 +27,39 @@ sealed interface WeatherUiState {
 
 enum class DarkThemeSetting {
     SYSTEM, LIGHT, DARK
+}
+
+private const val PREFS_NAME = "zephyr_sky_prefs"
+private const val LEGACY_PREFS_NAME = "skyline_weather_prefs"
+private const val PREF_KEY_LAST_CITY = "pref_key_last_city"
+private const val PREF_KEY_LAST_LATITUDE = "pref_key_last_latitude"
+private const val PREF_KEY_LAST_LONGITUDE = "pref_key_last_longitude"
+private const val PREF_KEY_DARK_THEME = "pref_key_dark_theme"
+private const val PREF_KEY_FAHRENHEIT = "pref_key_fahrenheit"
+private const val PREF_KEY_TEMP_NOTIFICATION_ENABLED = "pref_key_temp_notification_enabled"
+private const val PREF_KEY_AUTO_ALERTS_ENABLED = "pref_key_auto_alerts_enabled"
+
+private fun Context.zephyrSkyPreferences(): SharedPreferences {
+    val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    val legacyPrefs = getSharedPreferences(LEGACY_PREFS_NAME, Context.MODE_PRIVATE)
+    if (!prefs.contains(PREF_KEY_LAST_CITY) && legacyPrefs.all.isNotEmpty()) {
+        val editor = prefs.edit()
+        legacyPrefs.all.forEach { (key, value) ->
+            when (value) {
+                is Boolean -> editor.putBoolean(key, value)
+                is Float -> editor.putFloat(key, value)
+                is Int -> editor.putInt(key, value)
+                is Long -> editor.putLong(key, value)
+                is String -> editor.putString(key, value)
+                is Set<*> -> {
+                    @Suppress("UNCHECKED_CAST")
+                    editor.putStringSet(key, value as Set<String>)
+                }
+            }
+        }
+        editor.apply()
+    }
+    return prefs
 }
 
 class WeatherViewModel(
@@ -60,12 +94,12 @@ class WeatherViewModel(
     }
 
     fun loadPreferences(context: Context) {
-        val prefs = context.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        val prefs = context.zephyrSkyPreferences()
         
-        val lastCity = prefs.getString("pref_key_last_city", "서울") ?: "서울"
-        val lastLatitude = prefs.getString("pref_key_last_latitude", null)?.toDoubleOrNull()
-        val lastLongitude = prefs.getString("pref_key_last_longitude", null)?.toDoubleOrNull()
-        val themeName = prefs.getString("pref_key_dark_theme", DarkThemeSetting.SYSTEM.name) ?: DarkThemeSetting.SYSTEM.name
+        val lastCity = prefs.getString(PREF_KEY_LAST_CITY, "서울") ?: "서울"
+        val lastLatitude = prefs.getString(PREF_KEY_LAST_LATITUDE, null)?.toDoubleOrNull()
+        val lastLongitude = prefs.getString(PREF_KEY_LAST_LONGITUDE, null)?.toDoubleOrNull()
+        val themeName = prefs.getString(PREF_KEY_DARK_THEME, DarkThemeSetting.SYSTEM.name) ?: DarkThemeSetting.SYSTEM.name
         
         _darkThemeSetting.value = try {
             DarkThemeSetting.valueOf(themeName)
@@ -73,9 +107,9 @@ class WeatherViewModel(
             DarkThemeSetting.SYSTEM
         }
         
-        _isFahrenheit.value = prefs.getBoolean("pref_key_fahrenheit", false)
-        _tempNotificationEnabled.value = prefs.getBoolean("pref_key_temp_notification_enabled", true)
-        _autoAlertsEnabled.value = prefs.getBoolean("pref_key_auto_alerts_enabled", true)
+        _isFahrenheit.value = prefs.getBoolean(PREF_KEY_FAHRENHEIT, false)
+        _tempNotificationEnabled.value = prefs.getBoolean(PREF_KEY_TEMP_NOTIFICATION_ENABLED, true)
+        _autoAlertsEnabled.value = prefs.getBoolean(PREF_KEY_AUTO_ALERTS_ENABLED, true)
         
         if (lastLatitude != null && lastLongitude != null) {
             currentCoordinates = SelectedCoordinates(lastLatitude, lastLongitude)
@@ -90,9 +124,9 @@ class WeatherViewModel(
 
     fun selectDarkThemeSetting(setting: DarkThemeSetting, context: Context) {
         _darkThemeSetting.value = setting
-        context.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context.zephyrSkyPreferences()
             .edit()
-            .putString("pref_key_dark_theme", setting.name)
+            .putString(PREF_KEY_DARK_THEME, setting.name)
             .apply()
     }
 
@@ -102,9 +136,9 @@ class WeatherViewModel(
 
     fun toggleTempUnit(context: Context? = null) {
         _isFahrenheit.value = !_isFahrenheit.value
-        context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context?.zephyrSkyPreferences()
             ?.edit()
-            ?.putBoolean("pref_key_fahrenheit", _isFahrenheit.value)
+            ?.putBoolean(PREF_KEY_FAHRENHEIT, _isFahrenheit.value)
             ?.apply()
     }
 
@@ -142,11 +176,11 @@ class WeatherViewModel(
     }
 
     private fun saveCityPreference(context: Context?, city: String) {
-        context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context?.zephyrSkyPreferences()
             ?.edit()
-            ?.putString("pref_key_last_city", city)
-            ?.remove("pref_key_last_latitude")
-            ?.remove("pref_key_last_longitude")
+            ?.putString(PREF_KEY_LAST_CITY, city)
+            ?.remove(PREF_KEY_LAST_LATITUDE)
+            ?.remove(PREF_KEY_LAST_LONGITUDE)
             ?.apply()
     }
 
@@ -156,11 +190,11 @@ class WeatherViewModel(
         latitude: Double,
         longitude: Double
     ) {
-        context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context?.zephyrSkyPreferences()
             ?.edit()
-            ?.putString("pref_key_last_city", displayName)
-            ?.putString("pref_key_last_latitude", latitude.toString())
-            ?.putString("pref_key_last_longitude", longitude.toString())
+            ?.putString(PREF_KEY_LAST_CITY, displayName)
+            ?.putString(PREF_KEY_LAST_LATITUDE, latitude.toString())
+            ?.putString(PREF_KEY_LAST_LONGITUDE, longitude.toString())
             ?.apply()
     }
 
@@ -175,9 +209,9 @@ class WeatherViewModel(
 
     fun setTempNotificationEnabled(enabled: Boolean, context: Context, state: WeatherUiState.Success?) {
         _tempNotificationEnabled.value = enabled
-        context.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context.zephyrSkyPreferences()
             .edit()
-            .putBoolean("pref_key_temp_notification_enabled", enabled)
+            .putBoolean(PREF_KEY_TEMP_NOTIFICATION_ENABLED, enabled)
             .apply()
             
         if (enabled && state != null) {
@@ -206,7 +240,7 @@ class WeatherViewModel(
     }
 
     fun triggerMockWeatherPush(context: Context, condition: String) {
-        val title = "⚡ skyline 기상 특보 안내"
+        val title = "Zephyr Sky 기상 특보 안내"
         val desc = when (condition) {
             "Rain" -> "오후부터 돌풍을 동반한 강한 비가 내리겠습니다. 침수 피해 및 빗길 운전에 필히 유의하십시오."
             "Snow" -> "한파 및 눈발이 거세 기포 주의보가 추가 발효되었습니다. 보행 안전 및 폭설 빙판길 감속 운전 하시기 바랍니다."
@@ -224,9 +258,9 @@ class WeatherViewModel(
 
     fun setAutoAlertsEnabled(enabled: Boolean, context: Context? = null) {
         _autoAlertsEnabled.value = enabled
-        context?.getSharedPreferences("skyline_weather_prefs", Context.MODE_PRIVATE)
+        context?.zephyrSkyPreferences()
             ?.edit()
-            ?.putBoolean("pref_key_auto_alerts_enabled", enabled)
+            ?.putBoolean(PREF_KEY_AUTO_ALERTS_ENABLED, enabled)
             ?.apply()
     }
 

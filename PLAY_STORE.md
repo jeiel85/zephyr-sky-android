@@ -204,7 +204,7 @@ flutter build appbundle --release
 
 ### 개인정보 처리방침 URL
 ```
-https://jeiel85.github.io/zephyr-sky/privacy-policy.html
+https://jeiel85.github.io/zephyr-sky-android/privacy-policy.html
 ```
 - ✅ HTML 버전: `website/privacy-policy.html`
 - ✅ Markdown 버전: `PRIVACY_POLICY.md`

@@ -61,21 +61,23 @@ Zephyr Sky — 잔잔한 다크 톤의 미니멀 날씨 앱
 - 강수·한파·폭염·미세먼지 안내 알림 (선택)
 
 개인정보가 필요 없는 가벼운 앱
-- 위치 권한을 요청하지 않습니다. 도시 이름은 직접 검색합니다.
+- 현재 위치는 사용자가 직접 선택할 때만 대략적인 위치 권한을 요청합니다.
+- 도시 이름은 직접 검색할 수 있습니다.
 - 카메라·연락처·마이크 등 민감 권한을 사용하지 않습니다.
-- 알림 권한(POST_NOTIFICATIONS)만 선택적으로 요청합니다.
-- 모든 설정값은 기기 내부에만 저장되며, 외부 서버로 전송되지 않습니다.
+- 알림 권한(POST_NOTIFICATIONS)은 날씨 알림을 켤 때 선택적으로 요청합니다.
+- 도시명과 대략적인 좌표는 날씨 조회를 위해 Open-Meteo API에만 사용합니다.
+- 마지막 도시/좌표와 설정값은 기기 내부에만 저장됩니다.
 
 조용한 화면이 필요한 분께
 Zephyr Sky는 광고와 추적이 없는 미니멀 날씨 도구입니다.
 ```
 
-> ✅ **코드 기준 검증 완료** (2026-05-23):
-> - 매니페스트 권한: `POST_NOTIFICATIONS` 단 1개
-> - `WeatherRepository` 는 mock 데이터를 반환 (실 API 호출 없음)
-> - 위치/카메라/Gemini 코드 없음
-> - 데이터는 SharedPreferences("skyline_weather_prefs")로 로컬에만 저장
-> - 따라서 README 의 "Gemini AI·CameraX·실시간 API" 문구는 본 빌드에 적용 불가. 위 설명은 실제 동작에 맞춰 보수적으로 다시 썼습니다.
+> ✅ **코드 기준 검증 완료** (2026-05-27):
+> - 매니페스트 권한: `INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_COARSE_LOCATION`, `POST_NOTIFICATIONS`
+> - `WeatherRepository` 는 Open-Meteo Forecast / Geocoding / Air Quality API를 사용
+> - 위치는 선택형 대략 위치만 사용하며, 카메라/Gemini 코드는 현재 빌드에 없음
+> - 데이터는 SharedPreferences("zephyr_sky_prefs")로 로컬에만 저장
+> - 위 설명은 현재 Android 빌드의 실제 권한과 데이터 흐름 기준으로 작성
 
 ### 앱 아이콘
 - ✅ `play_store/assets/icon_512.png` (512×512, ~52 KB)

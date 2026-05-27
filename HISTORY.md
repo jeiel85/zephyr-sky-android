@@ -1,5 +1,36 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-27] Zephyr Sky 브랜드 잔여 표기 정리
+
+### 작업
+- 앱 상단 헤더에 남아 있던 `Skyline Weather` 문구를 `Zephyr Sky`로 변경.
+- 보조 태그라인을 `EDITORIAL WEATHER JOURNAL`에서 현재 앱 성격에 맞는 `MINIMAL WEATHER COMPANION`으로 변경.
+- 테스트 알림 제목의 `skyline` 표기를 `Zephyr Sky`로 변경.
+- SharedPreferences 이름을 `zephyr_sky_prefs`로 변경하고 기존 `skyline_weather_prefs` 값을 새 저장소로 복사하는 보존 마이그레이션을 추가.
+- 배포/Play Store 문서에 남아 있던 예전 `zephyr-sky` Pages URL을 `zephyr-sky-android`로 정렬.
+- ROADMAP의 이전 에디토리얼 저널/Gemini/CameraX 중심 설명을 현재 미니멀 날씨 앱 기준으로 갱신.
+
+### 변경 파일
+- `app/src/main/java/com/jeiel/zephyr_sky/ui/weather/WeatherScreen.kt`
+- `app/src/main/java/com/jeiel/zephyr_sky/ui/weather/WeatherViewModel.kt`
+- `ROADMAP.md`
+- `CHANGELOG.md`
+- `HISTORY.md`
+- `DEPLOYMENT.md`
+- `PLAY_STORE.md`
+- `play_store/listing/PLAY_CONSOLE_INTAKE.md`
+
+### 검증
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test --no-daemon` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint --no-daemon` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-daemon` 성공.
+
+### 결과
+- 앱과 문서 표면에 남아 있던 이전 브랜드 표기를 Zephyr Sky 기준으로 정리 완료.
+
+### 후속 작업
+- 없음.
+
 ## [2026-05-26] 도시 검색 보정 및 위치 기반 선택 UI 개선
 
 ### 작업

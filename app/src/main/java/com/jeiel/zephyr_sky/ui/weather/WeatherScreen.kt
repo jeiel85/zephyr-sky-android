@@ -177,7 +177,7 @@ fun WeatherScreen(
                     .padding(horizontal = 24.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Editorial Brand Header
+                // Brand header
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -185,7 +185,7 @@ fun WeatherScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Skyline Weather",
+                            text = "Zephyr Sky",
                             letterSpacing = 1.sp,
                             fontWeight = FontWeight.Black,
                             color = if (isDarkTheme) Color(0xFFF1F0F7) else Color(0xFF1A1C1E),
@@ -193,7 +193,7 @@ fun WeatherScreen(
                             modifier = Modifier.testTag("app_brand_logo")
                         )
                         Text(
-                            text = "EDITORIAL WEATHER JOURNAL",
+                            text = "MINIMAL WEATHER COMPANION",
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isDarkTheme) Color(0xFFBAC3D4) else Color(0xFF435E91),
