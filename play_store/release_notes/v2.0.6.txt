@@ -1,0 +1,22 @@
+<ko-KR>
+v2.0.6 Zephyr Sky 브랜드 정리
+
+변경
+• 앱 화면과 테스트 알림에 남아 있던 이전 브랜드 표기를 Zephyr Sky로 정리
+• 설정 저장소 이름을 Zephyr Sky 기준으로 전환
+
+개선
+• 기존 사용자의 도시, 위치, 테마, 단위, 알림 설정이 유지되도록 이전 설정값을 자동 복사
+• 배포 문서와 Play Store 안내의 이전 링크와 설명을 현재 앱 기준으로 갱신
+</ko-KR>
+<en-US>
+v2.0.6 Zephyr Sky Brand Cleanup
+
+Changed
+• Updated remaining old brand text in the app header and test alert title to Zephyr Sky
+• Renamed the local preferences store to match the Zephyr Sky brand
+
+Improved
+• Existing city, location, theme, unit, and notification settings are preserved automatically
+• Updated release and Play Store documentation to match the current Android app
+</en-US>

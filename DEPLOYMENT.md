@@ -79,8 +79,8 @@ Windows PowerShell에서는 다음과 같이 실행할 수 있습니다.
 현재 앱 내부 버전은 `app/build.gradle.kts`에서 관리합니다.
 
 ```kotlin
-versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 201
-versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.1"
+versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 206
+versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.6"
 ```
 
 릴리즈 워크플로우는 태그명에서 `VERSION_NAME`을 계산하고 `app/build.gradle.kts`의 `versionName`과 일치하는지 확인합니다. 불일치하면 릴리즈 빌드를 중단합니다.
@@ -88,11 +88,11 @@ versionName = (findProperty("VERSION_NAME") as String?) ?: "2.0.1"
 예:
 
 ```bash
-git tag v2.0.1
-git push origin v2.0.1
+git tag v2.0.6
+git push origin v2.0.6
 ```
 
-위 태그는 CI에서 `VERSION_NAME=2.0.1`로 빌드됩니다.
+위 태그는 CI에서 `VERSION_NAME=2.0.6`로 빌드됩니다.
 
 ---
 
@@ -110,7 +110,7 @@ git push origin v2.0.1
 Nightseed Survivor와 같은 방식으로 Play Console 업로드용 파일을 바탕화면에 준비할 수 있습니다.
 
 ```powershell
-.\scripts\export-play-store-release.ps1 -Version 2.0.1
+.\scripts\export-play-store-release.ps1 -Version 2.0.6
 ```
 
 이 스크립트는 최신 release AAB와 `play_store/release_notes/vX.Y.Z.txt`를 찾아 다음 이름으로 바탕화면에 복사합니다.

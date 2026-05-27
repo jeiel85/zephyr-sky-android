@@ -1,5 +1,37 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-05-27] v2.0.6 릴리즈 준비
+
+### 작업
+- 브랜드 잔여 표기 정리 작업을 새 패치 버전으로 배포하기 위해 앱 내부 버전을 `2.0.6` / `versionCode 206`으로 bump.
+- `CHANGELOG.md`의 Unreleased 항목을 `v2.0.6 - 2026-05-27` 섹션으로 승격.
+- `docs/releases/v2.0.6.md` 및 `play_store/release_notes/v2.0.6.txt` 릴리즈 노트 작성.
+- `DEPLOYMENT.md`의 버전 예시를 현재 릴리즈 버전 기준으로 갱신.
+
+### 변경 파일
+- `app/build.gradle.kts`
+- `CHANGELOG.md`
+- `HISTORY.md`
+- `DEPLOYMENT.md`
+- `docs/releases/v2.0.6.md`
+- `play_store/release_notes/v2.0.6.txt`
+
+### 검증
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test --no-daemon` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint --no-daemon` 성공.
+- 로컬: `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-daemon` 성공.
+- 로컬: `.keystore/release.keystore`를 환경변수로만 지정해 `.\gradlew.bat bundleRelease --no-daemon` 성공.
+- 로컬: `app/build/intermediates/bundle_manifest/release/processApplicationManifestReleaseForBundle/AndroidManifest.xml`에서 `versionCode="206"`, `versionName="2.0.6"` 확인.
+- 로컬: `.\scripts\export-play-store-release.ps1 -Version 2.0.6` 성공.
+- 산출물: `C:\Users\jeiel\OneDrive\바탕 화면\zephyr-sky-v2.0.6.aab` 확인.
+- 산출물: `C:\Users\jeiel\OneDrive\바탕 화면\zephyr-sky-v2.0.6-release-notes.txt` 확인.
+
+### 결과
+- v2.0.6 릴리즈 커밋 및 태그 생성 준비 완료.
+
+### 후속 작업
+- `v2.0.6` 태그 푸시 후 GitHub Release와 산출물 확인.
+
 ## [2026-05-27] Zephyr Sky 브랜드 잔여 표기 정리
 
 ### 작업

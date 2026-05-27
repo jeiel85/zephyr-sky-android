@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v2.0.6 - 2026-05-27
+
 ### Changed
 - 앱 상단 브랜드 문구와 테스트 알림 제목에 남아 있던 이전 `Skyline Weather`/`skyline` 표기를 `Zephyr Sky`로 정렬했습니다.
 - 내부 설정 저장소 이름을 `zephyr_sky_prefs`로 전환하고, 기존 `skyline_weather_prefs` 값은 새 저장소로 복사해 사용자 설정이 유지되도록 했습니다.
@@ -9,6 +11,14 @@
 ### Documentation
 - 배포/Play Store 문서의 예전 `zephyr-sky` Pages URL을 현재 `zephyr-sky-android` URL로 정렬했습니다.
 - ROADMAP의 이전 에디토리얼 저널/Gemini/CameraX 중심 설명을 현재 Zephyr Sky 미니멀 날씨 앱 기준으로 갱신했습니다.
+
+### Build / CI
+- `versionCode 205 → 206`, `versionName "2.0.5" → "2.0.6"`로 bump 했습니다.
+
+### Verification
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat test --no-daemon` 성공.
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat lint --no-daemon` 성공.
+- 로컬 `ANDROID_HOME=C:\Users\jeiel\AppData\Local\Android\Sdk` 지정 후 `.\gradlew.bat assembleDebug --no-daemon` 성공.
 
 ## v2.0.5 - 2026-05-26
 
