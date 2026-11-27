@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Build / CI
+- 버전 태그를 push하면 GitHub Actions(`play-release.yml`)가 Play용 AAB를 빌드해 업로드 키 지문을 확인한 뒤 Play 비공개 테스트(alpha) 트랙에 올리도록 했습니다. 실행은 GitHub 환경 `play`의 승인을 거칩니다.
+
 ## v2.0.6 - 2026-05-27
 
 ### Changed
