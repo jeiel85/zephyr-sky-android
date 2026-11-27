@@ -1,0 +1,142 @@
+# Play용 AAB를 CI에서 빌드해 Play 비공개 테스트(alpha) 트랙에 올립니다(README "릴리스").
+#
+# - 태그 v<x.y.z>가 올라오면 그 버전을 올립니다. 같은 태그로 release.yml(GitHub 릴리스, APK)도 함께 돌며,
+#   둘은 하는 일이 겹치지 않습니다(release.yml은 Play에 올리지 않고, 이 워크플로는 GitHub 릴리스를 만들지 않음).
+# - Actions 화면에서 손으로 돌릴 수도 있습니다(version 입력). dry_run을 켜면 빌드·서명 확인·트랙 조회까지만 하고 올리지 않습니다.
+# 비밀값은 GitHub 환경 'play'에만 있고, 그 환경은 jeiel85의 승인을 받아야 실행됩니다(main 브랜치·v* 태그만).
+name: Play release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '버전 (x.y.z, app/build.gradle.kts의 versionName과 같아야 함)'
+        required: true
+      dry_run:
+        description: '올리지 않고 빌드·서명 확인·트랙 조회만'
+        type: boolean
+        default: false
+
+concurrency:
+  group: play-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    environment: play
+    timeout-minutes: 40
+    env:
+      PACKAGE: com.jeiel.zephyr_sky
+      TRACK: alpha
+      # Play 업로드 키(.keystore/release.keystore, 별칭 zephyr-key) 인증서 SHA-256. 다른 키로 서명된 번들은 올리기 전에 멈춥니다.
+      UPLOAD_CERT_SHA256: '98:E5:E6:F1:B3:80:D1:B3:3B:9B:2B:0A:0C:D7:D1:C2:AC:B0:44:A3:19:09:C2:EF:4D:E1:C7:FC:DF:76:9C:4C'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 버전 정하기
+        id: ver
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          DRY: ${{ inputs.dry_run }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = push ]; then VER="${GITHUB_REF_NAME#v}"; else VER="$INPUT_VERSION"; fi
+          [[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::버전은 x.y.z여야 합니다: $VER"; exit 1; }
+          DECLARED_NAME="$(grep -E 'versionName = ' app/build.gradle.kts | sed -E 's/.*"([^"]+)".*/\1/')"
+          DECLARED_CODE="$(grep -E 'versionCode = ' app/build.gradle.kts | sed -E 's/.*\?: *([0-9]+).*/\1/')"
+          [ "$DECLARED_NAME" = "$VER" ] || { echo "::error::버전 $VER 이 app/build.gradle.kts versionName $DECLARED_NAME 과 다릅니다"; exit 1; }
+          [[ "$DECLARED_CODE" =~ ^[0-9]+$ ]] || { echo "::error::app/build.gradle.kts에서 versionCode를 읽지 못했습니다"; exit 1; }
+          NOTES="play_store/release_notes/v$VER.txt"
+          [ -f "$NOTES" ] || { echo "::error::$NOTES 가 없습니다"; exit 1; }
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "code=$DECLARED_CODE" >> "$GITHUB_OUTPUT"
+          echo "notes=$NOTES" >> "$GITHUB_OUTPUT"
+          echo "dry=${DRY:-false}" >> "$GITHUB_OUTPUT"
+          echo "버전 $VER (versionCode $DECLARED_CODE), dry_run=${DRY:-false}"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: 서명 키 놓기·지문 확인
+        env:
+          KEYSTORE_B64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_B64 }}
+          RELEASE_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+        run: |
+          KEYSTORE_PATH="$RUNNER_TEMP/play-upload.keystore"
+          echo "KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$KEYSTORE_PATH"
+          [ -s "$KEYSTORE_PATH" ] || { echo "::error::키스토어 비밀값이 비어 있습니다"; exit 1; }
+          SHA=$(keytool -J-Duser.language=en -list -v -keystore "$KEYSTORE_PATH" -storepass:env RELEASE_STORE_PASSWORD -alias "$RELEASE_KEY_ALIAS" \
+            | sed -n -E 's/^\s*SHA256:\s*([0-9A-F:]+).*/\1/p' | head -n1)
+          [ "$SHA" = "$UPLOAD_CERT_SHA256" ] || { echo "::error::키스토어 인증서 SHA-256이 업로드 키와 다릅니다: ${SHA:-읽기 실패}"; exit 1; }
+          echo "키스토어 인증서 SHA-256 일치"
+
+      - name: 시험
+        run: ./gradlew test
+
+      - name: AAB 빌드
+        env:
+          RELEASE_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+        run: |
+          ./gradlew bundleRelease
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          [ -s "$AAB" ] || { echo "::error::$AAB 가 없습니다"; exit 1; }
+          echo "AAB=$AAB" >> "$GITHUB_ENV"
+
+      - name: 출시 노트(play_store/release_notes에서)
+        env:
+          NOTES: ${{ steps.ver.outputs.notes }}
+        run: |
+          mkdir -p dist
+          for LANG_TAG in ko-KR en-US; do
+            awk -v o="<$LANG_TAG>" -v c="</$LANG_TAG>" '$0==o {on=1; next} $0==c {on=0} on' "$NOTES" > "dist/notes-$LANG_TAG.txt"
+            [ -s "dist/notes-$LANG_TAG.txt" ] || { echo "::error::$NOTES 에 <$LANG_TAG> 절이 없습니다"; exit 1; }
+            echo "== $LANG_TAG ($(wc -m < "dist/notes-$LANG_TAG.txt")자)"; cat "dist/notes-$LANG_TAG.txt"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zephyr-sky-play-${{ steps.ver.outputs.version }}
+          path: |
+            ${{ env.AAB }}
+            dist/notes-*.txt
+          retention-days: 30
+
+      - name: Play 트랙 상태(올리기 전)
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: pwsh -NoProfile -File tools/play-publish.ps1 -PackageName "$PACKAGE" -ShowTracks
+
+      - name: Alpha에 올리기
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          CODE: ${{ steps.ver.outputs.code }}
+          VER: ${{ steps.ver.outputs.version }}
+          DRY: ${{ steps.ver.outputs.dry }}
+        run: |
+          DRYFLAG=(); [ "$DRY" = true ] && DRYFLAG=(-DryRun)
+          pwsh -NoProfile -File tools/play-publish.ps1 -PackageName "$PACKAGE" -Track "$TRACK" -AabPath "$AAB" \
+            -ExpectedUploadCertSha256 "$UPLOAD_CERT_SHA256" -ExpectedVersionCode "$CODE" -ReleaseName "$CODE ($VER)" \
+            -NotesKoFile dist/notes-ko-KR.txt -NotesEnFile dist/notes-en-US.txt "${DRYFLAG[@]}"
+
+      - name: Play 트랙 상태(올린 뒤)
+        if: steps.ver.outputs.dry != 'true'
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: pwsh -NoProfile -File tools/play-publish.ps1 -PackageName "$PACKAGE" -ShowTracks
+
+      - name: 키 지우기
+        if: always()
+        run: rm -f "$RUNNER_TEMP/play-upload.keystore"

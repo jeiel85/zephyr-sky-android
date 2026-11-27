@@ -1,5 +1,22 @@
 # 프로젝트 이력 관리 (HISTORY.md)
 
+## [2026-11-27] Play 업로드 CI 추가
+
+### 작업
+- `.github/workflows/play-release.yml` 추가: 태그 `v*` push 또는 수동 실행(version, dry_run)으로 시험 → `bundleRelease` → 키스토어·AAB 인증서 SHA-256 확인 → Play `alpha` 트랙 업로드 → 트랙 상태 출력.
+- `tools/play-publish.ps1` 추가: 전역 `play-publish` 스킬 스크립트 복사본(리눅스 keytool 경로만 수정).
+- GitHub 환경 `play` 생성(승인자 jeiel85, 배포 정책 브랜치 `main`·태그 `v*`)과 환경 Secrets `PLAY_UPLOAD_KEYSTORE_B64`·`PLAY_UPLOAD_STORE_PASSWORD`·`PLAY_UPLOAD_KEY_ALIAS`·`PLAY_UPLOAD_KEY_PASSWORD`·`PLAY_SERVICE_ACCOUNT_JSON` 등록.
+- `gradlew` 실행 권한을 git에 `100755`로 기록.
+
+### 결정
+- 올릴 트랙: 프로젝트 지침에 정한 트랙이 없어 지금 쓰는 테스트 트랙(`alpha`, 2026-11-27 `-ShowTracks` 기준 206/2.0.6)만 올림. production은 올리지 않음.
+- `app/build.gradle.kts`의 release 서명은 이미 환경 변수(`KEYSTORE_PATH`, `RELEASE_*`)를 읽으므로 Gradle은 고치지 않음.
+- 업로드 키는 `.keystore/release.keystore`(SHA-256 `98:E5:…:9C:4C`)이며, v2.0.6 Play AAB도 이 키로 로컬 빌드해 올렸음. GitHub 릴리스 APK와 같은 키를 쓰는 상태는 이번 범위에서 바꾸지 않음(채널별 키 분리는 후속).
+
+### 검증
+- 로컬: 워크플로 YAML 파싱, 출시 노트 추출(ko 436자/en 389자), versionCode 추출(206), 키스토어 SHA-256 추출 파이프라인 확인.
+- CI: 머지 후 `dry_run=true` 실행으로 확인 예정.
+
 ## [2026-05-27] v2.0.6 릴리즈 준비
 
 ### 작업

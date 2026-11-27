@@ -85,6 +85,21 @@ sdk.dir=C:\\Users\\<USER>\\AppData\\Local\\Android\\Sdk
 
 릴리즈 빌드에는 업로드 키스토어와 관련 환경변수가 필요합니다. 자세한 절차는 [DEPLOYMENT.md](DEPLOYMENT.md)를 참고하세요.
 
+## 릴리스
+
+버전 태그 `vX.Y.Z`를 push하면 GitHub Actions 워크플로 두 개가 같은 태그로 함께 돌며, 하는 일은 겹치지 않습니다.
+
+| 워크플로 | 하는 일 | 비밀값 |
+|---|---|---|
+| `.github/workflows/release.yml` | 시험 → 서명 APK로 GitHub Release 생성(AAB는 릴리스에 올리지 않음) | 저장소 Secrets `RELEASE_*` |
+| `.github/workflows/play-release.yml` | 시험 → AAB 빌드 → 업로드 키 SHA-256 확인 → Play 비공개 테스트(`alpha`) 트랙에 업로드 → 트랙 상태 출력 | GitHub 환경 `play`의 Secrets |
+
+- `play-release.yml`은 환경 `play`(브랜치 `main`·태그 `v*`만 허용)를 쓰므로 실행마다 jeiel85가 Actions 화면에서 승인해야 진행됩니다.
+- 출시 노트는 `play_store/release_notes/vX.Y.Z.txt`의 `<ko-KR>`·`<en-US>` 절(언어당 500자 이내)을 씁니다. 파일이 없거나 태그 버전이 `app/build.gradle.kts`의 `versionName`과 다르면 올리기 전에 멈춥니다. versionCode는 `app/build.gradle.kts`의 값을 그대로 씁니다.
+- Actions 화면에서 `Play release`를 손으로 돌릴 수도 있습니다(`version` 입력). `dry_run`을 켜면 빌드·서명 확인·트랙 조회까지만 하고 올리지 않습니다.
+- **Play 업로드는 이 워크플로가 맡습니다.** 같은 버전을 로컬(`scripts/export-play-store-release.ps1`로 만든 파일을 Play Console에 직접 올리기, 또는 `play-publish` 스킬)로 또 올리지 않습니다. 같은 versionCode는 Play가 거부하므로 두 번째 업로드는 실패합니다. CI가 실패했을 때만 로컬 업로드로 대신합니다.
+- `tools/play-publish.ps1`은 전역 `play-publish` 스킬 스크립트의 복사본입니다(리눅스용 keytool 경로만 다름). 고칠 때는 원본과 함께 맞춥니다.
+
 ## GitHub Pages
 
 랜딩 페이지는 `website/` 디렉터리에서 관리하며, `.github/workflows/pages.yml`이 GitHub Pages로 배포합니다.
